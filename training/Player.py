@@ -10,8 +10,9 @@ class Player:
     num: int
     agent: model.Agent
 
-    def __init__(self, n: int):
+    def __init__(self, n: int, agent: model.Agent):
         self.num = n
+        self.agent = agent
         # Todo: Should not be a str, enum instead.
         self.role: str = "inspector" if n == 0 else "fantom"
 
@@ -35,6 +36,7 @@ class Player:
                             game,
                             after,
                             game.update_game_state(self.role))
+        self.agent.give_reward(0, False)
 
     def select(self, active_cards, game_state):
         """
