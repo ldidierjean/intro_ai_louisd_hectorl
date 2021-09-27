@@ -4,6 +4,7 @@ from tensorflow.keras.optimizers import Adam
 from rl.agents.dqn import DQNAgent
 from rl.memory import SequentialMemory
 from rl.policy import LinearAnnealedPolicy, EpsGreedyQPolicy
+import mappings
 
 def build_model(input_size, output_size, hidden_size, nb_hidden_layers):
     model = Sequential()
@@ -29,6 +30,12 @@ def build_dqn_agent(input_size, output_size, hidden_size, nb_hidden_layers):
     return dqn
 
 def game_data_to_state(game_data):
+    question_type = [0] * 22
+    question_type[mappings[game_data['question type']]] = 1
+    state = []
+    return state
+
+def game_data_to_fantom_state(game_data):
     state = []
     return state
 
@@ -50,9 +57,12 @@ class Agent():
                target_model_update=300)
         self.__dqn.compile(Adam(lr=1e-5), metrics=['mae'])
     
-    def get_action(self, state, nb_possible_actions):
+    def get_action(self, game_data):
+        state = game_data_to_state(game_data)
+        nb_possible_actions = len(game_data['data'])
+
         action_index = self.__dqn.forward(state)
-        
+
         if action_index >= nb_possible_actions:
             action_index = nb_possible_actions - 1
         return action_index
