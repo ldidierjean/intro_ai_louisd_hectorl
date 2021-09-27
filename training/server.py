@@ -3,7 +3,7 @@ import sys
 
 from Game import Game
 from Player import Player
-from globals import logger, clients, link
+from globals import clients, link
 
 """
     The order of connexion of the sockets is important.
@@ -16,7 +16,6 @@ def init_connexion():
     while len(clients) != 2:
         link.listen(2)
         (clientsocket, addr) = link.accept()
-        logger.info("Received client !")
         clients.append(clientsocket)
         clientsocket.settimeout(10)
 
@@ -24,11 +23,7 @@ def init_connexion():
 if __name__ == '__main__':
     players = [Player(0), Player(1)]
     scores = []
-
-    logger.info("no client yet")
     init_connexion()
-    logger.info("received all clients")
-
     # profiling
     pr = cProfile.Profile()
     pr.enable()
