@@ -31,12 +31,42 @@ def build_dqn_agent(input_size, output_size, hidden_size, nb_hidden_layers):
 
 def game_data_to_state(game_data):
     question_type = [0] * 22
-    question_type[mappings[game_data['question type']]] = 1
-    state = []
-    return state
+    question_type[mappings.question_mappings[game_data['question type']]] = 1
 
-def game_data_to_fantom_state(game_data):
-    state = []
+    data_locations = [0] * 10
+    data_characters = [0] * 8
+    if isinstance(game_data['data'][0], int):
+        for location in game_data['data']:
+            data_locations[location] = 1
+    else:
+        for character in game_data['data']:
+            data_characters[mappings.color_mappings[character['color']]] = 1
+
+    carlotta = game_data['game state']['exit'] - game_data['game state']['position_carlotta']
+    tour = game_data['game state']['num_tour']
+    shadow = game_data['game state']['shadow']
+    blocked = game_data['game state']['blocked'][0] + game_data['game state']['blocked'][1]
+    game_state = [carlotta + tour + shadow] + blocked
+    
+    characters = [0] * 8 * 3
+
+    for character in game_data['game state']['characters']:
+        offset = mappings.color_mappings[character['color']]
+        characters[offset] = 1 if character['suspect'] else 0
+        characters[offset + 1] = character['position']
+        characters[offset + 2] = character['power']
+    
+    active = [0] * 8
+
+    for active_character in game_data['game state']['active character_cards']:
+        active[mappings.color_mappings[active_character['color']]] = 1
+
+    fantom = [0] * 8
+
+    if 'fantom' in game_data['game_state']:
+        fantom[mappings.color_mappings[game_data['game_state']['fantom']]] = 1
+
+    state = question_type + data_locations + data_characters + game_state + characters + active + fantom
     return state
 
 class Agent():
