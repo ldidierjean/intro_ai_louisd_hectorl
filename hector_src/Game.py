@@ -11,7 +11,7 @@ class Game:
         Class representing a full game until either the inspector
         of the fantom wins.
     """
-    fantom: Player
+    fantomPlayer: Player
     inspector: Player
     position_carlotta: int
     exit: int
@@ -28,7 +28,7 @@ class Game:
     #  Player)
     def __init__(self, fantom: Player, inspector: Player):
         # Todo: Should be self.players: Tuple[Player] = (player_1, player_2)
-        self.fantom = fantom
+        self.fantomPlayer = fantom
         self.inspector = inspector
         self.position_carlotta = 6  # position on the exit path
         # Todo: Should be removed and make the game ends when carlotta reach 0.
@@ -134,7 +134,7 @@ class Game:
 
         for i in [first_player_in_phase, 1 - first_player_in_phase,
                   1 - first_player_in_phase, first_player_in_phase]:
-            (self.inspector if i == 0 else self.fantom).play(self)
+            (self.inspector if i == 0 else self.fantomPlayer).play(self)
 
     def fantom_scream(self):
         partition: List[Set[Character]] = [
@@ -156,7 +156,7 @@ class Game:
                         p.suspect = False
         suspectNumber = len([p for p in self.characters if p.suspect])
         self.position_carlotta += suspectNumber
-        self.fantom.agent.give_reward(suspectNumber, False)
+        self.fantomPlayer.agent.give_reward(suspectNumber, False)
 
     def tour(self):
         # work
@@ -177,7 +177,7 @@ class Game:
             self.tour()
         # HERE: game ends self.position_carlotta > self.exit = phantoms win
         if (self.position_carlotta > self.exit):
-            self.fantom.agent.give_reward(10, True)
+            self.fantomPlayer.agent.give_reward(10, True)
         else:
             self.inspector.agent.give_reward(10, True)
         return self.exit - self.position_carlotta
@@ -192,7 +192,7 @@ class Game:
 
     def update_game_state(self, player_role):
         """
-            representation of the global state of the game.
+            representation of the global statee of the game.
         """
         self.characters_display = [character.display() for character in
                                    self.characters]
