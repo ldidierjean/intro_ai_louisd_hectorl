@@ -1,6 +1,6 @@
 from random import randint, choice
 from globals import passages, colors, pink_passages, before, after, mandatory_powers
-from hector_src import model
+import model
 
 class Player:
     """

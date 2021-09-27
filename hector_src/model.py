@@ -86,6 +86,8 @@ class Agent():
         self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=0.99,
                target_model_update=300)
         self.__dqn.compile(Adam(lr=1e-5), metrics=['mae'])
+
+        self.total_rewards = 0
     
     def get_action(self, game_data):
         state = game_data_to_state(game_data)
@@ -98,7 +100,14 @@ class Agent():
         return action_index
 
     def give_reward(self, reward, is_terminal):
+        self.total_rewards += reward
         self.__dqn.backward(reward, is_terminal)
+
+    def get_total_rewards(self):
+        return self.total_rewards
+    
+    def reset_total_rewards(self):
+        self.total_rewards = 0
     
     def set_training(self, training):
         self.__dqn.training = training
