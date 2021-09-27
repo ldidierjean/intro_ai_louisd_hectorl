@@ -15,7 +15,7 @@ import model
 
 if __name__ == '__main__':
     # 1. Start a W&B run
-    wandb.init(project='AI')
+    #wandb.init(project='AI')
 
     # 2. Save model inputs and hyperparameters
     config = wandb.config
@@ -31,15 +31,15 @@ if __name__ == '__main__':
 
     try:
         while True:
-            players = [Player(0, agent1), Player(1, agent2)]
-            scores = []
-            game = Game(agent1, agent2)
+            game = Game(Player(0, agent1), Player(1, agent2))
             game.lancer()
+            """
             wandb.log({
                         "Episode": episode,
                         "Inspector total reward": agent1.get_total_rewards(),
                         "Fantom total reward": agent2.get_total_rewards()
             })
+            """
             agent1.reset_total_rewards()
             agent2.reset_total_rewards()
             episode += 1

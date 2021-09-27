@@ -1,6 +1,8 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Activation, Flatten
 from tensorflow.keras.optimizers import Adam
+import numpy
+import tensorflow as tf
 from rl.agents.dqn import DQNAgent
 from rl.memory import SequentialMemory
 from rl.policy import LinearAnnealedPolicy, EpsGreedyQPolicy
@@ -45,16 +47,16 @@ def game_data_to_state(game_data):
     carlotta = game_data['game state']['exit'] - game_data['game state']['position_carlotta']
     tour = game_data['game state']['num_tour']
     shadow = game_data['game state']['shadow']
-    blocked = game_data['game state']['blocked'][0] + game_data['game state']['blocked'][1]
-    game_state = [carlotta + tour + shadow] + blocked
+    blocked = [game_data['game state']['blocked'][0], game_data['game state']['blocked'][1]]
+    game_state = [carlotta, tour, shadow] + blocked
     
-    characters = [0] * 8 * 3
+    characters = [0] * (8 * 3)
 
     for character in game_data['game state']['characters']:
         offset = mappings.color_mappings[character['color']]
         characters[offset] = 1 if character['suspect'] else 0
         characters[offset + 1] = character['position']
-        characters[offset + 2] = character['power']
+        characters[offset + 2] = 1 if character['power'] else 0
     
     active = [0] * 8
 
@@ -63,8 +65,8 @@ def game_data_to_state(game_data):
 
     fantom = [0] * 8
 
-    if 'fantom' in game_data['game_state']:
-        fantom[mappings.color_mappings[game_data['game_state']['fantom']]] = 1
+    if 'fantom' in game_data['game state']:
+        fantom[mappings.color_mappings[game_data['game state']['fantom']]] = 1
 
     state = question_type + data_locations + data_characters + game_state + characters + active + fantom
     return state
@@ -80,7 +82,7 @@ class Agent():
         model.add(Activation('linear'))
         print(model.summary())
 
-        memory = SequentialMemory(limit=100000, window_length=10)
+        memory = SequentialMemory(limit=100000, window_length=1)
         policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.01, value_test=0,
                               nb_steps=100000)
         self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=0.99,
