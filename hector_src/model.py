@@ -28,6 +28,9 @@ def build_dqn_agent(input_size, output_size, hidden_size, nb_hidden_layers):
     
     return dqn
 
+def game_data_to_state_tensor(game_data):
+    pass
+
 class Agent():
     def __init__(self, input_size, output_size, hidden_size, nb_hidden_layers):
         model = Sequential()
