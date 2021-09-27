@@ -1,5 +1,4 @@
-import json
-from random import shuffle, randrange, choice
+from random import shuffle, choice
 from typing import List, Set, Union, Tuple
 
 from Character import Character
@@ -12,7 +11,8 @@ class Game:
         Class representing a full game until either the inspector
         of the fantom wins.
     """
-    players: List[Player]
+    fantom: Player
+    inspector: Player
     position_carlotta: int
     exit: int
     num_tour: int
@@ -26,9 +26,10 @@ class Game:
 
     # Todo: def __init__ should be __init__(self, player_1: Player, player_2:
     #  Player)
-    def __init__(self, players: List[Player]):
+    def __init__(self, fantom: Player, inspector: Player):
         # Todo: Should be self.players: Tuple[Player] = (player_1, player_2)
-        self.players = players
+        self.fantom = fantom
+        self.inspector = inspector
         self.position_carlotta = 6  # position on the exit path
         # Todo: Should be removed and make the game ends when carlotta reach 0.
         self.exit = 22
@@ -133,7 +134,7 @@ class Game:
 
         for i in [first_player_in_phase, 1 - first_player_in_phase,
                   1 - first_player_in_phase, first_player_in_phase]:
-            self.players[i].play(self)
+            (self.inspector if i == 0 else self.fantom).play(self)
 
     def fantom_scream(self):
         partition: List[Set[Character]] = [
@@ -141,17 +142,21 @@ class Game:
         if len(partition[self.fantom.position]) == 1 \
                 or self.fantom.position == self.shadow:
             self.position_carlotta += 1
+            suscount = 0
             for room, chars in enumerate(partition):
                 if len(chars) > 1 and room != self.shadow:
                     for p in chars:
                         p.suspect = False
+                        suscount += 1
+            self.inspector.agent.give_reward(suscount, False)
         else:
             for room, chars in enumerate(partition):
                 if len(chars) == 1 or room == self.shadow:
                     for p in chars:
                         p.suspect = False
-        self.position_carlotta += len(
-            [p for p in self.characters if p.suspect])
+        suspectNumber = len([p for p in self.characters if p.suspect])
+        self.position_carlotta += suspectNumber
+        self.fantom.agent.give_reward(suspectNumber, False)
 
     def tour(self):
         # work
@@ -171,6 +176,10 @@ class Game:
                 [p for p in self.characters if p.suspect]) > 1:
             self.tour()
         # HERE: game ends self.position_carlotta > self.exit = phantoms win
+        if (self.position_carlotta > self.exit):
+            self.fantom.agent.give_reward(10, True)
+        else:
+            self.inspector.agent.give_reward(10, True)
         return self.exit - self.position_carlotta
 
     def __repr__(self):

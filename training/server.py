@@ -1,9 +1,10 @@
-import cProfile
 import sys
+import wandb
 
 from Game import Game
 from Player import Player
-from globals import clients, link
+from hector_src import model
+
 
 """
     The order of connexion of the sockets is important.
@@ -12,32 +13,24 @@ from globals import clients, link
 """
 
 
-def init_connexion():
-    while len(clients) != 2:
-        link.listen(2)
-        (clientsocket, addr) = link.accept()
-        clients.append(clientsocket)
-        clientsocket.settimeout(10)
-
-
 if __name__ == '__main__':
-    players = [Player(0), Player(1)]
-    scores = []
-    init_connexion()
-    # profiling
-    pr = cProfile.Profile()
-    pr.enable()
+    # 1. Start a W&B run
+    wandb.init(project='AI', entity='lekk')
 
+    # 2. Save model inputs and hyperparameters
+    config = wandb.config
+    config.learning_rate = 0.01
+
+    # Model training here
+    agent1 = model.Agent(85, 10, 10, 10)
+    agent2 = model.Agent(85, 10, 10, 10)
+    players = [Player(1, agent1), Player(0, agent2)]
+    scores = []
     game = Game(players)
     game.lancer()
 
-    link.close()
+    # 3. Log metrics over time to visualize performance
+    with tf.Session() as sess:
+        # ...
+        wandb.tensorflow.log(tf.summary.merge_all())
 
-    # profiling
-    pr.disable()
-    # stats_file = open("{}.txt".format(os.path.basename(__file__)), 'w')
-    stats_file = open("./logs/profiling.txt", 'w')
-    sys.stdout = stats_file
-    pr.print_stats(sort='time')
-
-    sys.stdout = sys.__stdout__
