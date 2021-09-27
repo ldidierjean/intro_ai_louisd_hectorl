@@ -50,8 +50,12 @@ class Agent():
                target_model_update=300)
         self.__dqn.compile(Adam(lr=1e-5), metrics=['mae'])
     
-    def get_action(self, state):
-        return self.__dqn.forward(state)
+    def get_action(self, state, nb_possible_actions):
+        action_index = self.__dqn.forward(state)
+        
+        if action_index >= nb_possible_actions:
+            action_index = nb_possible_actions - 1
+        return action_index
 
     def give_reward(self, reward, is_terminal):
         self.__dqn.backward(reward, is_terminal)
