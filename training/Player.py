@@ -1,8 +1,6 @@
-import json
-from typing import Tuple
 from random import randint, choice
 from globals import passages, colors, pink_passages, before, after, mandatory_powers
-
+from hector_src import model
 
 class Player:
     """
@@ -10,6 +8,7 @@ class Player:
         or the fantom (player 1)
     """
     num: int
+    agent: model.Agent
 
     def __init__(self, n: int):
         self.num = n
@@ -47,13 +46,9 @@ class Player:
         question = {"question type": "select character",
                     "data": available_characters,
                     "game state": game_state}
-        selected_character = ask_question_json(self, question)
+        selected_character = self.agent.get_action(question)
 
         if selected_character not in range(len(active_cards)):
-            warning_message = (
-                ' !  : selected character not in '
-                'available characters. Choosing random character.'
-            )
             selected_character = randint(0, len(active_cards) - 1)
 
         perso = active_cards[selected_character]
@@ -75,7 +70,7 @@ class Player:
             active_passages = pink_passages
         else:
             active_passages = passages
-        return [room for room in active_passages[position] if set([room, position]) != set(game.blocked)]
+        return [room for room in active_passages[position] if {room, position} != set(game.blocked)]
 
 
     def activate_power(self, charact, game, activables, game_state):
@@ -95,7 +90,7 @@ class Player:
                 question = {"question type": f"activate {charact.color} power",
                             "data": [0, 1],
                             "game state": game_state}
-                power_activation = ask_question_json(self, question)
+                power_activation = self.agent.get_action(question)
 
             # the power will be used
             # charact.power represents the fact that
@@ -131,12 +126,11 @@ class Player:
                             question = {"question type": "white character power move " + character_to_move,
                                         "data": available_positions,
                                         "game state": game_state}
-                            selected_index = ask_question_json(self, question)
+                            selected_index = self.agent.get_action(question)
 
                             # test
                             if selected_index not in range(len(available_positions)):
                                 selected_position = choice(available_positions)
-
                             else:
                                 selected_position = available_positions[selected_index]
 
@@ -155,7 +149,7 @@ class Player:
                     question = {"question type": "purple character power",
                                 "data": available_colors,
                                 "game state": game_state}
-                    selected_index = ask_question_json(self, question)
+                    selected_index = self.agent.get_action(question)
 
                     # test
                     if selected_index not in range(len(colors)):
@@ -181,7 +175,7 @@ class Player:
                         question = {"question type": "brown character power",
                                     "data": available_colors,
                                     "game state": game_state}
-                        selected_index = ask_question_json(self, question)
+                        selected_index = self.agent.get_action(question)
 
                         # test
                         if selected_index not in range(len(colors)):
@@ -200,7 +194,7 @@ class Player:
                     question = {"question type": "grey character power",
                                 "data": available_rooms,
                                 "game state": game_state}
-                    selected_index = ask_question_json(self, question)
+                    selected_index = self.agent.get_action(question)
 
                     # test
                     if selected_index not in range(len(available_rooms)):
@@ -220,7 +214,7 @@ class Player:
                     question = {"question type": "blue character power room",
                                 "data": available_rooms,
                                 "game state": game_state}
-                    selected_index = ask_question_json(self, question)
+                    selected_index = self.agent.get_action(question)
 
                     # test
                     if selected_index not in range(len(available_rooms)):
@@ -236,7 +230,7 @@ class Player:
                     question = {"question type": "blue character power exit",
                                 "data": available_exits,
                                 "game state": game_state}
-                    selected_index = ask_question_json(self, question)
+                    selected_index = self.agent.get_action(question)
 
                     # test
                     if selected_index not in range(len(available_exits)):
@@ -296,7 +290,7 @@ class Player:
             question = {"question type": "select position",
                         "data": available_positions,
                         "game state": game_state}
-            selected_index = ask_question_json(self, question)
+            selected_index = self.agent.get_action(question)
 
             # test
             if selected_index not in range(len(available_positions)):
