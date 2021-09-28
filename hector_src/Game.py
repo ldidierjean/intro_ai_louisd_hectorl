@@ -146,10 +146,11 @@ class Game:
             for room, chars in enumerate(partition):
                 if len(chars) > 1 and room != self.shadow:
                     for p in chars:
+                        if p.suspect == True:
+                            suscount += 1
                         p.suspect = False
-                        suscount += 1
             if self.inspector.agent is not None:
-                self.inspector.agent.give_reward(suscount, False)
+                self.inspector.agent.accumulate_reward(suscount ** 2)
         else:
             for room, chars in enumerate(partition):
                 if len(chars) == 1 or room == self.shadow:
@@ -158,7 +159,7 @@ class Game:
         suspectNumber = len([p for p in self.characters if p.suspect])
         self.position_carlotta += suspectNumber
         if self.fantomPlayer.agent is not None:
-            self.fantomPlayer.agent.give_reward(suspectNumber, False)
+            self.fantomPlayer.agent.accumulate_reward(suspectNumber)
 
     def tour(self):
         # work
@@ -177,17 +178,27 @@ class Game:
         while self.position_carlotta < self.exit and len(
                 [p for p in self.characters if p.suspect]) > 1:
             self.tour()
+            if self.position_carlotta < self.exit and len([p for p in self.characters if p.suspect]) > 1:
+                if self.fantomPlayer.agent is not None:
+                    self.fantomPlayer.agent.release_accumulated_rewards(False)
+                if self.inspector.agent is not None:
+                    self.inspector.agent.release_accumulated_rewards(False)
+
         # HERE: game ends self.position_carlotta > self.exit = phantoms win
         if (self.position_carlotta > self.exit):
             if self.fantomPlayer.agent is not None:
-                self.fantomPlayer.agent.give_reward(30, True)
+                self.fantomPlayer.agent.accumulate_reward(30)
+                self.fantomPlayer.agent.release_accumulated_rewards(True)
             if self.inspector.agent is not None:
-                self.inspector.agent.give_reward(-5, True)
+                self.inspector.agent.accumulate_reward(-5)
+                self.inspector.agent.release_accumulated_rewards(True)
         else:
             if self.inspector.agent is not None:
-                self.inspector.agent.give_reward(30, True)
+                self.inspector.agent.accumulate_reward(30)
+                self.inspector.agent.release_accumulated_rewards(True)
             if self.fantomPlayer.agent is not None:
-                self.fantomPlayer.agent.give_reward(-5, True)
+                self.fantomPlayer.agent.accumulate_reward(-5)
+                self.fantomPlayer.agent.release_accumulated_rewards(True)
         return self.exit - self.position_carlotta
 
     def __repr__(self):

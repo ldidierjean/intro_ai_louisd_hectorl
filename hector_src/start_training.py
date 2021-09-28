@@ -16,13 +16,14 @@ from datetime import datetime
 
 if __name__ == '__main__':
     # 1. Start a W&B run
+    wandb.login(key='2a685d5cc66964c236f60ea0cf23c1e864579f5c')
     wandb.init(project='AI', name='Training run', entity='ai_louis_hector')
 
     # Model training here
     fantom_agent = model.Agent(77, 10, 100, 5)
-    fantom_agent.set_training(True)
+    #fantom_agent.set_training(True)
     inspector_agent = model.Agent(77, 10, 100, 5)
-    inspector_agent.set_training(True)
+    #inspector_agent.set_training(True)
 
     episode = 0
 
@@ -35,7 +36,9 @@ if __name__ == '__main__':
             wandb.log({
                         "Episode": episode,
                         "Fantom total reward": fantom_agent.get_total_rewards(),
-                        "Inspector total reward": inspector_agent.get_total_rewards()
+                        "Fantom step": fantom_agent.get_current_step(),
+                        "Inspector total reward": inspector_agent.get_total_rewards(),
+                        "Inspector step": inspector_agent.get_current_step()
             })
             fantom_agent.reset_total_rewards()
             inspector_agent.reset_total_rewards()

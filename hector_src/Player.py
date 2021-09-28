@@ -53,6 +53,8 @@ class Player:
                     "data": available_characters,
                     "game state": game_state}
         selected_character = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+        if self.agent is not None:
+            self.agent.give_reward(0, False)
 
         if selected_character not in range(len(active_cards)):
             selected_character = randint(0, len(active_cards) - 1)
@@ -97,6 +99,8 @@ class Player:
                             "data": [0, 1],
                             "game state": game_state}
                 power_activation = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                if self.agent is not None:
+                    self.agent.give_reward(0, False)
 
             # the power will be used
             # charact.power represents the fact that
@@ -133,6 +137,8 @@ class Player:
                                         "data": available_positions,
                                         "game state": game_state}
                             selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                            if self.agent is not None:
+                                self.agent.give_reward(0, False)
 
                             # test
                             if selected_index not in range(len(available_positions)):
@@ -156,6 +162,8 @@ class Player:
                                 "data": available_colors,
                                 "game state": game_state}
                     selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    if self.agent is not None:
+                        self.agent.give_reward(0, False)
 
                     # test
                     if selected_index not in range(len(colors)):
@@ -182,6 +190,8 @@ class Player:
                                     "data": available_colors,
                                     "game state": game_state}
                         selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                        if self.agent is not None:
+                            self.agent.give_reward(0, False)
 
                         # test
                         if selected_index not in range(len(colors)):
@@ -201,6 +211,8 @@ class Player:
                                 "data": available_rooms,
                                 "game state": game_state}
                     selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    if self.agent is not None:
+                        self.agent.give_reward(0, False)
 
                     # test
                     if selected_index not in range(len(available_rooms)):
@@ -221,6 +233,8 @@ class Player:
                                 "data": available_rooms,
                                 "game state": game_state}
                     selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    if self.agent is not None:
+                        self.agent.give_reward(0, False)
 
                     # test
                     if selected_index not in range(len(available_rooms)):
@@ -237,6 +251,8 @@ class Player:
                                 "data": available_exits,
                                 "game state": game_state}
                     selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    if self.agent is not None:
+                        self.agent.give_reward(0, False)
 
                     # test
                     if selected_index not in range(len(available_exits)):
@@ -297,6 +313,8 @@ class Player:
                         "data": available_positions,
                         "game state": game_state}
             selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+            if self.agent is not None:
+                self.agent.give_reward(0, False)
 
             # test
             if selected_index not in range(len(available_positions)):
