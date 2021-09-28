@@ -43,7 +43,8 @@ class Player:
                             after,
                             game.update_game_state(self.role))
         darkOrAloneAfter = self.nbDarkOrAlone(game)
-        self.give_points(game, darkOrAloneBefore, darkOrAloneAfter)
+        if self.agent is not None:
+            self.give_points(game, darkOrAloneBefore, darkOrAloneAfter)
 
     def nbDarkOrAlone(self, game):
         p: List[Set[Character]] = [
