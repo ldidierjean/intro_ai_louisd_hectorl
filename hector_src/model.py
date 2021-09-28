@@ -51,7 +51,7 @@ def game_data_to_state(game_data):
         fantom[mappings.color_mappings[game_data['game state']['fantom']]] = 1
 
     state = question_type + data_locations + data_characters + data_power_characters + game_state + characters + active + fantom
-    return state
+    return numpy.array(state, dtype='f')
 
 class Agent():
     def __init__(self, input_size, output_size, hidden_size, nb_hidden_layers):
@@ -61,23 +61,15 @@ class Agent():
         model.add(Activation('relu'))
         model.add(Dense(hidden_size))
         model.add(Activation('relu'))
-        model.add(Dense(hidden_size))
-        model.add(Activation('relu'))
-        model.add(Dense(hidden_size))
-        model.add(Activation('relu'))
-        model.add(Dense(hidden_size))
-        model.add(Activation('relu'))
-        model.add(Dense(hidden_size))
-        model.add(Activation('relu'))
         model.add(Dense(output_size))
         model.add(Activation('linear'))
         print(model.summary())
 
         memory = SequentialMemory(limit=100000, window_length=1)
-        policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.01, value_test=0,
-                              nb_steps=100000)
-        self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=0.99,
-               target_model_update=300)
+        policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1, value_min=.01, value_test=0,
+                              nb_steps=10000)
+        self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=1,
+               target_model_update=0)
         self.__dqn.compile(Adam(lr=1e-5), metrics=['mae'])
 
         self.__dqn.training = True
@@ -113,6 +105,8 @@ class Agent():
         state = game_data_to_state(game_data)
         chosen_value = self.__dqn.forward(state)
 
+        print(self.__dqn.policy.inner_policy.eps)
+
         self.__dqn.step += 1
 
         return self.__get_index_of_closest_value_in_list(chosen_value, self.__data_to_values(game_data['data']))
@@ -133,6 +127,7 @@ class Agent():
         return self.total_rewards
     
     def reset_total_rewards(self):
+        self.current_accumulated_rewards = 0
         self.total_rewards = 0
     
     def set_training(self, training):
