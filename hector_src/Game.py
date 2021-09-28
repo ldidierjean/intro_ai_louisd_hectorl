@@ -106,7 +106,7 @@ class Game:
             "shadow": self.shadow,
             "blocked": self.blocked,
             "characters": self.characters_display,
-            # Todo: should be removed
+            # Todo: should be removedhttps://www.youtube.com/watch?v=DFPdtdY-a_c
             "character_cards": self.character_cards_display,
             "active character_cards": self.active_cards_display,
         }
@@ -139,23 +139,25 @@ class Game:
     def fantom_scream(self):
         partition: List[Set[Character]] = [
             {p for p in self.characters if p.position == i} for i in range(10)]
+        suscount = 0
         if len(partition[self.fantom.position]) == 1 \
                 or self.fantom.position == self.shadow:
             self.position_carlotta += 1
-            suscount = 0
             for room, chars in enumerate(partition):
                 if len(chars) > 1 and room != self.shadow:
                     for p in chars:
                         if p.suspect == True:
                             suscount += 1
                         p.suspect = False
-            if self.inspector.agent is not None:
-                self.inspector.agent.accumulate_reward(suscount ** 2)
         else:
             for room, chars in enumerate(partition):
                 if len(chars) == 1 or room == self.shadow:
                     for p in chars:
+                        if p.suspect == True:
+                            suscount += 1
                         p.suspect = False
+        if self.inspector.agent is not None:
+            self.inspector.agent.accumulate_reward(suscount ** 2)
         suspectNumber = len([p for p in self.characters if p.suspect])
         self.position_carlotta += suspectNumber
         if self.fantomPlayer.agent is not None:
