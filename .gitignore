@@ -133,3 +133,5 @@ dmypy.json
 wandb/
 
 Note.txt
+
+saved_models/
