@@ -1,7 +1,11 @@
-from random import randint, choice
-from globals import passages, colors, pink_passages, before, after, mandatory_powers
-import model
 import random
+from random import randint, choice
+from Character import Character
+from typing import List, Set
+
+import model
+from globals import passages, colors, pink_passages, before, after, mandatory_powers
+
 
 class Player:
     """
@@ -18,6 +22,7 @@ class Player:
         self.role: str = "inspector" if n == 0 else "fantom"
 
     def play(self, game):
+        darkOrAloneBefore = self.nbDarkOrAlone(game)
         charact = self.select(
             game.active_cards, game.update_game_state(self.role))
 
@@ -37,7 +42,36 @@ class Player:
                             game,
                             after,
                             game.update_game_state(self.role))
-    
+        darkOrAloneAfter = self.nbDarkOrAlone(game)
+        self.give_points(game, darkOrAloneBefore, darkOrAloneAfter)
+
+    def nbDarkOrAlone(self, game):
+        p: List[Set[Character]] = [
+            {c for c in game.characters if c.position == i} for i in range(10)]
+        darkOrAlone = 0
+        for c in game.characters:
+            if c.position == game.shadow or len(p[c.position]) == 1:
+                darkOrAlone += 1
+        return darkOrAlone
+
+    def give_points(self, game, darkOrAloneBefore, darkOrAloneAfter):
+        p: List[Set[Character]] = [
+            {c for c in game.characters if c.position == i} for i in range(10)]
+        fantomeIsDarkOrAlone = False
+        if len(p[game.fantom.position]) == 1 or game.fantom.position == game.shadow:
+            fantomeIsDarkOrAlone = True
+        if self.role == "fantom":
+            if fantomeIsDarkOrAlone:
+                diff = darkOrAloneAfter - darkOrAloneBefore
+            else:
+                diff = (8 - darkOrAloneAfter) - (8 - darkOrAloneBefore)
+            print(diff)
+            self.agent.give_reward(diff*5, False)
+        else:
+            b = abs(darkOrAloneBefore - 4)
+            a = abs(darkOrAloneAfter - 4)
+            self.agent.give_reward((b - a) * 7, False)
+
     def random_move(self, question):
         data = question['data']
         return random.randint(0, len(data) - 1)
@@ -64,14 +98,12 @@ class Player:
         del active_cards[selected_character]
         return perso
 
-
     def get_adjacent_positions(self, charact, game):
         if charact.color == "pink":
             active_passages = pink_passages
         else:
             active_passages = passages
         return [room for room in active_passages[charact.position] if {room, charact.position} != set(game.blocked)]
-
 
     def get_adjacent_positions_from_position(self, position, charact, game):
         if charact.color == "pink":
@@ -80,7 +112,6 @@ class Player:
             active_passages = passages
         return [room for room in active_passages[position] if {room, position} != set(game.blocked)]
 
-
     def activate_power(self, charact, game, activables, game_state):
         """
             Use the special power of the character.
@@ -88,7 +119,6 @@ class Player:
         # check if the power should be used before of after moving
         # this depends on the "activables" variable, which is a set.
         if not charact.power_activated and charact.color in activables:
-
             # check if special power is mandatory
             if charact.color in mandatory_powers:
                 power_activation = 1
@@ -98,7 +128,8 @@ class Player:
                 question = {"question type": f"activate {charact.color} power",
                             "data": [0, 1],
                             "game state": game_state}
-                power_activation = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                power_activation = self.agent.get_action(question) if self.agent is not None else self.random_move(
+                    question)
                 if self.agent is not None:
                     self.agent.give_reward(0, False)
 
@@ -136,7 +167,8 @@ class Player:
                             question = {"question type": "white character power move " + character_to_move,
                                         "data": available_positions,
                                         "game state": game_state}
-                            selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                            selected_index = self.agent.get_action(
+                                question) if self.agent is not None else self.random_move(question)
                             if self.agent is not None:
                                 self.agent.give_reward(0, False)
 
@@ -161,7 +193,8 @@ class Player:
                     question = {"question type": "purple character power",
                                 "data": available_colors,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(
+                        question)
                     if self.agent is not None:
                         self.agent.give_reward(0, False)
 
@@ -189,7 +222,8 @@ class Player:
                         question = {"question type": "brown character power",
                                     "data": available_colors,
                                     "game state": game_state}
-                        selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                        selected_index = self.agent.get_action(
+                            question) if self.agent is not None else self.random_move(question)
                         if self.agent is not None:
                             self.agent.give_reward(0, False)
 
@@ -204,13 +238,13 @@ class Player:
 
                 # grey character
                 if charact.color == "grey":
-
                     available_rooms = [room for room in range(10) if room is
                                        not game.shadow]
                     question = {"question type": "grey character power",
                                 "data": available_rooms,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(
+                        question)
                     if self.agent is not None:
                         self.agent.give_reward(0, False)
 
@@ -226,13 +260,13 @@ class Player:
 
                 # blue character
                 if charact.color == "blue":
-
                     # choose room
                     available_rooms = [room for room in range(10)]
                     question = {"question type": "blue character power room",
                                 "data": available_rooms,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(
+                        question)
                     if self.agent is not None:
                         self.agent.give_reward(0, False)
 
@@ -250,7 +284,8 @@ class Player:
                     question = {"question type": "blue character power exit",
                                 "data": available_exits,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(
+                        question)
                     if self.agent is not None:
                         self.agent.give_reward(0, False)
 
@@ -282,7 +317,7 @@ class Player:
         for step in range(1, number_of_characters_in_room):
             # build rooms that are a distance equal to step+1
             next_rooms = list()
-            for room in available_rooms[step-1]:
+            for room in available_rooms[step - 1]:
                 next_rooms += self.get_adjacent_positions_from_position(room,
                                                                         charact,
                                                                         game)
@@ -293,7 +328,6 @@ class Player:
         for sublist in available_rooms:
             for room in sublist:
                 temp.append(room)
-
 
         # filter the list in order to keep an unique occurrence of each room
         temp = set(temp)

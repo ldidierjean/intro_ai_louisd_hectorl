@@ -17,7 +17,7 @@ class Game:
     exit: int
     num_tour: int
     shadow: int
-    blocked: Tuple[int]
+    blocked: Tuple[int, int]
     characters: Set[Character]
     character_cards: List[Character]
     active_cards: List[Character]
@@ -106,7 +106,7 @@ class Game:
             "shadow": self.shadow,
             "blocked": self.blocked,
             "characters": self.characters_display,
-            # Todo: should be removedhttps://www.youtube.com/watch?v=DFPdtdY-a_c
+            # Todo: should be removed
             "character_cards": self.character_cards_display,
             "active character_cards": self.active_cards_display,
         }
