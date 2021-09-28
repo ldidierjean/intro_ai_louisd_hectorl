@@ -82,6 +82,8 @@ class Agent():
 
         self.__dqn.training = True
 
+        self.loss = 1
+
         self.total_rewards = 0
 
         self.current_accumulated_rewards = 0
@@ -119,13 +121,13 @@ class Agent():
         self.current_accumulated_rewards += add
     
     def release_accumulated_rewards(self, terminal):
-        self.__dqn.backward(self.current_accumulated_rewards, terminal)
+        self.loss = self.__dqn.backward(self.current_accumulated_rewards, terminal)[0]
         self.total_rewards += self.current_accumulated_rewards
         self.current_accumulated_rewards = 0
 
     def give_reward(self, reward, is_terminal):
         self.total_rewards += reward
-        self.__dqn.backward(reward, is_terminal)
+        self.loss = self.__dqn.backward(reward, is_terminal)[0]
 
     def get_total_rewards(self):
         return self.total_rewards

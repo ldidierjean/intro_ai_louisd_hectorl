@@ -187,17 +187,17 @@ class Game:
         # HERE: game ends self.position_carlotta > self.exit = phantoms win
         if (self.position_carlotta > self.exit):
             if self.fantomPlayer.agent is not None:
-                self.fantomPlayer.agent.accumulate_reward(30)
+                self.fantomPlayer.agent.accumulate_reward(100)
                 self.fantomPlayer.agent.release_accumulated_rewards(True)
             if self.inspector.agent is not None:
-                self.inspector.agent.accumulate_reward(-5)
+                self.inspector.agent.accumulate_reward(0)
                 self.inspector.agent.release_accumulated_rewards(True)
         else:
             if self.inspector.agent is not None:
-                self.inspector.agent.accumulate_reward(30)
+                self.inspector.agent.accumulate_reward(100)
                 self.inspector.agent.release_accumulated_rewards(True)
             if self.fantomPlayer.agent is not None:
-                self.fantomPlayer.agent.accumulate_reward(-5)
+                self.fantomPlayer.agent.accumulate_reward(0)
                 self.fantomPlayer.agent.release_accumulated_rewards(True)
         return self.exit - self.position_carlotta
 

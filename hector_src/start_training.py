@@ -5,48 +5,38 @@ from Game import Game
 from Player import Player
 import model
 from datetime import datetime
-
-
-"""
-    The order of connexion of the sockets is important.
-    inspector is player 0, it must be represented by the first socket.
-    fantom is player 1, it must be representer by the second socket.
-"""
-
+import threading
 
 if __name__ == '__main__':
     # 1. Start a W&B run
-    wandb.login(key='2a685d5cc66964c236f60ea0cf23c1e864579f5c')
     wandb.init(project='AI', name='Training run', entity='ai_louis_hector')
 
     # Model training here
-<<<<<<< HEAD
     fantom_agent = model.Agent(93, 10, 100, 5)
     fantom_agent.set_training(True)
     inspector_agent = model.Agent(93, 10, 100, 5)
     inspector_agent.set_training(True)
-=======
-    fantom_agent = model.Agent(77, 10, 100, 5)
-    #fantom_agent.set_training(True)
-    inspector_agent = model.Agent(77, 10, 100, 5)
-    #inspector_agent.set_training(True)
->>>>>>> bcc77f3dba26c7cc24bdb3783109359a2e421594
 
     episode = 0
 
     try:
         while True:
-            game = Game(Player(0, fantom_agent), Player(1, None))
-            game.lancer()
-            game = Game(Player(0, None), Player(1, inspector_agent))
-            game.lancer()
+            game1 = Game(Player(0, fantom_agent), Player(1, None))
+            game1.lancer()
+            
+            game2 = Game(Player(0, None), Player(1, inspector_agent))
+            game2.lancer()
+
             wandb.log({
                         "Episode": episode,
                         "Fantom total reward": fantom_agent.get_total_rewards(),
                         "Fantom step": fantom_agent.get_current_step(),
+                        "Fantom loss": fantom_agent.loss,
                         "Inspector total reward": inspector_agent.get_total_rewards(),
-                        "Inspector step": inspector_agent.get_current_step()
+                        "Inspector step": inspector_agent.get_current_step(),
+                        "Inspector loss": inspector_agent.loss
             })
+
             fantom_agent.reset_total_rewards()
             inspector_agent.reset_total_rewards()
             episode += 1
