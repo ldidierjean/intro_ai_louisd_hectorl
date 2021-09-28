@@ -19,9 +19,9 @@ if __name__ == '__main__':
     wandb.init(project='AI', name='Training run', entity='ai_louis_hector')
 
     # Model training here
-    fantom_agent = model.Agent(77, 10, 100, 5)
+    fantom_agent = model.Agent(93, 10, 100, 5)
     fantom_agent.set_training(True)
-    inspector_agent = model.Agent(77, 10, 100, 5)
+    inspector_agent = model.Agent(93, 10, 100, 5)
     inspector_agent.set_training(True)
 
     episode = 0

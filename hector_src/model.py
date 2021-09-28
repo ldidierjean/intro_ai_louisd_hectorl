@@ -35,16 +35,18 @@ def game_data_to_state(game_data):
     question_type = [0] * 22
     question_type[mappings.question_mappings[game_data['question type']]] = 1
 
-    data = [0] * 10
+    data_locations = [0] * 10
+    data_characters = [0] * 8
+    data_power_characters = [0] * 8
     if isinstance(game_data['data'][0], int):
-        for i in range(len(game_data['data'])):
-            data[i] = game_data['data'][i]
+        for location in game_data['data']:
+            data_locations[location] = 1
     elif isinstance(game_data['data'][0], str):
-        for i in range(len(game_data['data'])):
-            data[i] = mappings.color_mappings[game_data['data'][i]]
+        for color in game_data['data']:
+            data_power_characters[mappings.color_mappings[color]] = 1
     else:
-        for i in range(len(game_data['data'])):
-            data[i] = mappings.color_mappings[game_data['data'][i]['color']]
+        for character in game_data['data']:
+            data_characters[mappings.color_mappings[character['color']]] = 1
         
 
     carlotta = game_data['game state']['exit'] - game_data['game state']['position_carlotta']
@@ -71,7 +73,7 @@ def game_data_to_state(game_data):
     if 'fantom' in game_data['game state']:
         fantom[mappings.color_mappings[game_data['game state']['fantom']]] = 1
 
-    state = question_type + data + game_state + characters + active + fantom
+    state = question_type + data_locations + data_characters + data_power_characters + game_state + characters + active + fantom
     return state
 
 class Agent():
@@ -90,19 +92,36 @@ class Agent():
                               nb_steps=100000)
         self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=0.99,
                target_model_update=300)
-        self.__dqn.compile(Adam(lr=1e-4), metrics=['mae'])
+        self.__dqn.compile(Adam(lr=1e-5), metrics=['mae'])
 
         self.total_rewards = 0
     
+    def __data_to_values(self, data):
+        if isinstance(data[0], int):
+            return data
+        elif isinstance(data[0], str):
+            result = []
+            for color in data:
+                result.append(mappings.color_mappings[color])
+            return result
+        else:
+            result = []
+            for character in data:
+                result.append(mappings.color_mappings[character['color']])
+            return result
+    
+    def __get_index_of_closest_value_in_list(self, input, data):
+        result = 0
+        for i in range(len(data)):
+            if abs(data[result] - input) > abs(data[i] - input):
+                result = i
+        return result
+    
     def get_action(self, game_data):
         state = game_data_to_state(game_data)
-        nb_possible_actions = len(game_data['data'])
+        chosen_value = self.__dqn.forward(state)
 
-        action_index = self.__dqn.forward(state)
-
-        if action_index >= nb_possible_actions:
-            action_index = nb_possible_actions - 1
-        return action_index
+        return self.__get_index_of_closest_value_in_list(chosen_value, self.__data_to_values(game_data['data']))
 
     def give_reward(self, reward, is_terminal):
         self.total_rewards += reward
@@ -116,6 +135,3 @@ class Agent():
     
     def set_training(self, training):
         self.__dqn.training = training
-    
-    def save_weights(self, filepath):
-        self.__dqn.save_weights(filepath)
