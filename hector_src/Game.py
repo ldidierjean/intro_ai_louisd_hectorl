@@ -140,6 +140,7 @@ class Game:
         partition: List[Set[Character]] = [
             {p for p in self.characters if p.position == i} for i in range(10)]
         suscount = 0
+        suspectNumberBefore = len([p for p in self.characters if p.suspect])
         if len(partition[self.fantom.position]) == 1 \
                 or self.fantom.position == self.shadow:
             self.position_carlotta += 1
@@ -158,10 +159,12 @@ class Game:
                         p.suspect = False
         if self.inspector.agent is not None:
             self.inspector.agent.accumulate_reward(suscount ** 2)
-        suspectNumber = len([p for p in self.characters if p.suspect])
-        self.position_carlotta += suspectNumber
+        suspectNumberAfter = len([p for p in self.characters if p.suspect])
+        self.position_carlotta += suspectNumberAfter
         if self.fantomPlayer.agent is not None:
-            self.fantomPlayer.agent.accumulate_reward(suspectNumber)
+            self.fantomPlayer.agent.accumulate_reward(
+                10 - (suspectNumberBefore - suspectNumberAfter) * 2
+            )
 
     def tour(self):
         # work
