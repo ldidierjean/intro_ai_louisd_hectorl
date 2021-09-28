@@ -66,7 +66,7 @@ class Player:
                 diff = darkOrAloneAfter - darkOrAloneBefore
             else:
                 diff = (8 - darkOrAloneAfter) - (8 - darkOrAloneBefore)
-            print(diff)
+            #print(diff)
             self.agent.give_reward(diff*5, False)
         else:
             b = abs(darkOrAloneBefore - 4)

@@ -68,7 +68,7 @@ class Agent():
         memory = SequentialMemory(limit=100000, window_length=1)
         policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1, value_min=.01, value_test=0,
                               nb_steps=10000)
-        self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=1,
+        self.__dqn = DQNAgent(model=model, nb_actions=output_size, memory=memory, policy=policy, gamma=0.99,
                target_model_update=0)
         self.__dqn.compile(Adam(lr=1e-5), metrics=['mae'])
 
@@ -104,8 +104,6 @@ class Agent():
     def get_action(self, game_data):
         state = game_data_to_state(game_data)
         chosen_value = self.__dqn.forward(state)
-
-        print(self.__dqn.policy.inner_policy.eps)
 
         self.__dqn.step += 1
 
