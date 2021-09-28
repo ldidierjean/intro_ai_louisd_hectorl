@@ -1,9 +1,10 @@
+from os import name
 import sys
 import wandb
-
 from Game import Game
 from Player import Player
 import model
+from datetime import datetime
 
 
 """
@@ -15,33 +16,43 @@ import model
 
 if __name__ == '__main__':
     # 1. Start a W&B run
-    #wandb.init(project='AI')
-
-    # 2. Save model inputs and hyperparameters
-    config = wandb.config
-    config.learning_rate = 0.01
+    wandb.init(project='AI', name='Training run', entity='ai_louis_hector')
 
     # Model training here
-    agent1 = model.Agent(85, 10, 100, 8)
-    agent1.set_training(True)
-    agent2 = model.Agent(85, 10, 100, 8)
-    agent2.set_training(True)
+    fantom_agent = model.Agent(77, 10, 100, 5)
+    fantom_agent.set_training(True)
+    inspector_agent = model.Agent(77, 10, 100, 5)
+    inspector_agent.set_training(True)
 
     episode = 0
 
     try:
         while True:
-            game = Game(Player(0, agent1), Player(1, agent2))
+            game = Game(Player(0, fantom_agent), Player(1, None))
             game.lancer()
-            """
+            game = Game(Player(0, None), Player(1, inspector_agent))
+            game.lancer()
             wandb.log({
                         "Episode": episode,
-                        "Inspector total reward": agent1.get_total_rewards(),
-                        "Fantom total reward": agent2.get_total_rewards()
+                        "Fantom total reward": fantom_agent.get_total_rewards(),
+                        "Inspector total reward": inspector_agent.get_total_rewards()
             })
-            """
-            agent1.reset_total_rewards()
-            agent2.reset_total_rewards()
+            fantom_agent.reset_total_rewards()
+            inspector_agent.reset_total_rewards()
             episode += 1
     except KeyboardInterrupt:
-        print('\nStopping training.')
+        print('Stopping training.')
+
+    print('Saving both trained models. Please wait...')
+
+    filepath = './saved_models/' + datetime.now().strftime("%d-%m-%Y") + 'Fantom'
+
+    print("Saving fantom model: " + filepath)
+
+    fantom_agent.save_weights(filepath)
+
+    filepath = './saved_models/' + datetime.now().strftime("%d-%m-%Y") + 'Inspector'
+
+    print("Saving inspector model: " + filepath)
+
+    inspector_agent.save_weights(filepath)

@@ -148,7 +148,8 @@ class Game:
                     for p in chars:
                         p.suspect = False
                         suscount += 1
-            self.inspector.agent.give_reward(suscount, False)
+            if self.inspector.agent is not None:
+                self.inspector.agent.give_reward(suscount, False)
         else:
             for room, chars in enumerate(partition):
                 if len(chars) == 1 or room == self.shadow:
@@ -156,7 +157,8 @@ class Game:
                         p.suspect = False
         suspectNumber = len([p for p in self.characters if p.suspect])
         self.position_carlotta += suspectNumber
-        self.fantomPlayer.agent.give_reward(suspectNumber, False)
+        if self.fantomPlayer.agent is not None:
+            self.fantomPlayer.agent.give_reward(suspectNumber, False)
 
     def tour(self):
         # work
@@ -177,9 +179,15 @@ class Game:
             self.tour()
         # HERE: game ends self.position_carlotta > self.exit = phantoms win
         if (self.position_carlotta > self.exit):
-            self.fantomPlayer.agent.give_reward(10, True)
+            if self.fantomPlayer.agent is not None:
+                self.fantomPlayer.agent.give_reward(30, True)
+            if self.inspector.agent is not None:
+                self.inspector.agent.give_reward(-5, True)
         else:
-            self.inspector.agent.give_reward(10, True)
+            if self.inspector.agent is not None:
+                self.inspector.agent.give_reward(30, True)
+            if self.fantomPlayer.agent is not None:
+                self.fantomPlayer.agent.give_reward(-5, True)
         return self.exit - self.position_carlotta
 
     def __repr__(self):

@@ -1,6 +1,7 @@
 from random import randint, choice
 from globals import passages, colors, pink_passages, before, after, mandatory_powers
 import model
+import random
 
 class Player:
     """
@@ -36,7 +37,10 @@ class Player:
                             game,
                             after,
                             game.update_game_state(self.role))
-        self.agent.give_reward(0, False)
+    
+    def random_move(self, question):
+        data = question['data']
+        return random.randint(0, len(data) - 1)
 
     def select(self, active_cards, game_state):
         """
@@ -48,7 +52,7 @@ class Player:
         question = {"question type": "select character",
                     "data": available_characters,
                     "game state": game_state}
-        selected_character = self.agent.get_action(question)
+        selected_character = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
         if selected_character not in range(len(active_cards)):
             selected_character = randint(0, len(active_cards) - 1)
@@ -92,7 +96,7 @@ class Player:
                 question = {"question type": f"activate {charact.color} power",
                             "data": [0, 1],
                             "game state": game_state}
-                power_activation = self.agent.get_action(question)
+                power_activation = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
             # the power will be used
             # charact.power represents the fact that
@@ -128,7 +132,7 @@ class Player:
                             question = {"question type": "white character power move " + character_to_move,
                                         "data": available_positions,
                                         "game state": game_state}
-                            selected_index = self.agent.get_action(question)
+                            selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
                             # test
                             if selected_index not in range(len(available_positions)):
@@ -151,7 +155,7 @@ class Player:
                     question = {"question type": "purple character power",
                                 "data": available_colors,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
                     # test
                     if selected_index not in range(len(colors)):
@@ -177,7 +181,7 @@ class Player:
                         question = {"question type": "brown character power",
                                     "data": available_colors,
                                     "game state": game_state}
-                        selected_index = self.agent.get_action(question)
+                        selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
                         # test
                         if selected_index not in range(len(colors)):
@@ -196,7 +200,7 @@ class Player:
                     question = {"question type": "grey character power",
                                 "data": available_rooms,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
                     # test
                     if selected_index not in range(len(available_rooms)):
@@ -216,7 +220,7 @@ class Player:
                     question = {"question type": "blue character power room",
                                 "data": available_rooms,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
                     # test
                     if selected_index not in range(len(available_rooms)):
@@ -232,7 +236,7 @@ class Player:
                     question = {"question type": "blue character power exit",
                                 "data": available_exits,
                                 "game state": game_state}
-                    selected_index = self.agent.get_action(question)
+                    selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
                     # test
                     if selected_index not in range(len(available_exits)):
@@ -292,7 +296,7 @@ class Player:
             question = {"question type": "select position",
                         "data": available_positions,
                         "game state": game_state}
-            selected_index = self.agent.get_action(question)
+            selected_index = self.agent.get_action(question) if self.agent is not None else self.random_move(question)
 
             # test
             if selected_index not in range(len(available_positions)):
