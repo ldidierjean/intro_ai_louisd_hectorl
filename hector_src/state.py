@@ -42,6 +42,7 @@ class State:
     active_cards: Set[int]
     choose_to_reach_state: int
     question: int
+    ongoing_card: int
 
     def __init__(
             self,
@@ -54,7 +55,8 @@ class State:
             suspect: Set[int],
             active_cards: Set[int],
             choose_to_reach_state: int,
-            question: int
+            question: int,
+            ongoing_card: int
     ):
         self.fantom = fantom
         self.pos_carlotta = pos_carlotta
@@ -66,6 +68,7 @@ class State:
         self.active_cards = active_cards
         self.choose_to_reach_state = choose_to_reach_state
         self.question = question
+        self.ongoing_card = ongoing_card
 
     def __repr__(self):
         return "Fantom: " + str(self.fantom) + \
@@ -112,7 +115,8 @@ class State:
         print('select_character:')
         nextStates = []
         for c in self.active_cards:
-            copy = self.copy()
+            copy = copy.deepcopy(self)
+            copy.
             nextStates.append()
         return self
 
