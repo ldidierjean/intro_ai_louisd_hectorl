@@ -39,6 +39,8 @@ class Player():
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+        self.ongoing_card = -1
+
     def connect(self):
         self.socket.connect((host, port))
 
@@ -47,7 +49,9 @@ class Player():
 
     def answer(self, question):
         # work
-        response_index = get_response_index(question, PlayerType.FANTOM)
+        (response_index, card) = get_response_index(question, PlayerType.FANTOM, self.ongoing_card)
+
+        self.ongoing_card = card
 
         # log
         data = question["data"]
