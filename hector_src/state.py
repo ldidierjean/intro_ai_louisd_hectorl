@@ -25,9 +25,9 @@ class State:
             next_player: PlayerType,
             shadow: int,
             blocked: Tuple[int, int],
-            alibi_card: [int],
-            suspect: {int},
-            active_cards: {int},
+            alibi_card: List[int],
+            suspect: Set[int],
+            active_cards: Set[int],
             oc: Character,
             last_action: int
     ):
