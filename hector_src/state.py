@@ -6,7 +6,7 @@ def generate_state_from_server_question(question: Dict):
     data = question['data']
     game_state = question['game state']
     state = State(
-        
+
     )
     return state
 
@@ -18,7 +18,6 @@ class State:
     next_player: PlayerType
     shadow: int
     blocked: Tuple[int, int]
-    alibi_card: List[int]
     suspect: Set[int]
     active_cards: Set[int]
     ongoing_card: Character
@@ -33,7 +32,6 @@ class State:
             next_player: PlayerType,
             shadow: int,
             blocked: Tuple[int, int],
-            alibi_card: List[int],
             suspect: Set[int],
             active_cards: Set[int],
             oc: Character,
@@ -46,7 +44,6 @@ class State:
         self.next_player = next_player
         self.shadow = shadow
         self.blocked = blocked
-        self.alibi_card = alibi_card
         self.suspect = suspect
         self.active_cards = active_cards
         self.ongoing_card = Character(oc.color, oc.suspect, oc.position, oc.power_used)
@@ -55,3 +52,4 @@ class State:
 
     def generate_state(self):
         return self
+
