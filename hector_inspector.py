@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 import hector_src.protocol as protocol
 from hector_src.minimax import minimax
 from hector_src.globals import PlayerType, minimax_depth_level
+from hector_src.state import generate_state_from_server_question
 
 host = "localhost"
 port = 12000
@@ -49,10 +50,10 @@ class Player():
 
     def answer(self, question):
         # work
-        data = question["data"]
-        game_state = question["game state"]
-        response_index = minimax(None, minimax_depth_level, True, PlayerType.INSPECTOR)
+        state = generate_state_from_server_question(question)
+        response_index = minimax(state, minimax_depth_level, True, PlayerType.INSPECTOR)
         # log
+        data = question["data"]
         inspector_logger.debug("inspector answers")
         inspector_logger.debug(f"question type ----- {question['question type']}")
         inspector_logger.debug(f"data -------------- {data}")
