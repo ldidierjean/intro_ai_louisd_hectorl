@@ -27,34 +27,38 @@ def minimax(state: State, depth: int, alpha: float, beta: float, player_type: Pl
         # Maximizing
         value = float('-inf')
         action_value = -1
+        card = -1
         for new_state in new_states:
             result = minimax(new_state, depth - 1, alpha, beta, player_type)[0]
             if result > value:
                 value = result
                 action_value = new_state.choose_to_reach_state
+                card = new_state.ongoing_card
             if result > alpha:
                 alpha = result
             if beta <= alpha:
                 break
-        return (value, action_value)
+        return (value, action_value, card)
     else:
         # Minimizing
         value = float('inf')
         action_value = -1
+        card = -1
         for new_state in new_states:
             result = minimax(new_state, depth - 1, alpha, beta, player_type)[0]
             if result < value:
                 value = result
                 action_value = new_state.choose_to_reach_state
+                card = new_state.ongoing_card
             if result < beta:
                 beta = result
             if beta <= alpha:
                 break
-        return (value, action_value)
+        return (value, action_value, card)
 
-def get_response_index(question: Dict, player_type: PlayerType):
-    state = generate_state_from_server_question(question, PlayerType.FANTOM)
-    chosen_value = minimax(state, minimax_depth_level, True, PlayerType.FANTOM)[1]
+def get_response_index(question: Dict, player_type: PlayerType, ongoing_card: int):
+    state = generate_state_from_server_question(question, player_type, ongoing_card)
+    (_, chosen_value, card) = minimax(state, minimax_depth_level, True, player_type)
 
     response_index = 0
     data = question['data']
@@ -74,4 +78,4 @@ def get_response_index(question: Dict, player_type: PlayerType):
                 response_index = i
                 break
 
-    return response_index
+    return (response_index, card)
