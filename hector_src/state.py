@@ -116,13 +116,14 @@ class State:
         return self
 
     def select_character(self):
-        print('select_character:')
+        print(self)
         nextStates = []
         for c in self.active_cards:
-            copy = copy.deepcopy(self)
-            copy.
-            nextStates.append()
-        return self
+            ns = copy.deepcopy(self)
+            ns.choose_to_reach_state = c
+            ns.active_cards.remove(c)
+            nextStates.append(ns)
+        return nextStates
 
     def activate_white_power(self):
         print('activate_white_power:')
@@ -144,16 +145,8 @@ class State:
         print('activate_blue_power:')
         return self
 
-    def activate_pink_power(self):
-        print('activate_pink_power:')
-        return self
-
     def activate_black_power(self):
         print('activate_black_power:')
-        return self
-
-    def activate_red_power(self):
-        print('activate_red_power:')
         return self
 
     def select_position(self):
