@@ -17,7 +17,7 @@ def __get_score_of_state(state: State, player_type: PlayerType):
     else:
         return score_state_for_inspector(state)
 
-def minimax(state: State, depth: int, player_type: PlayerType):
+def minimax(state: State, depth: int, alpha: float, beta: float, player_type: PlayerType):
     if depth <= 0 or __is_end_state(state):
         return (__get_score_of_state(state, player_type),)
 
@@ -28,20 +28,28 @@ def minimax(state: State, depth: int, player_type: PlayerType):
         value = float('-inf')
         action_value = -1
         for new_state in new_states:
-            result = minimax(new_state, depth - 1, player_type)[0]
+            result = minimax(new_state, depth - 1, alpha, beta, player_type)[0]
             if result > value:
                 value = result
                 action_value = new_state.choose_to_reach_state
+            if result > alpha:
+                alpha = result
+            if beta <= alpha:
+                break
         return (value, action_value)
     else:
         # Minimizing
         value = float('inf')
         action_value = -1
         for new_state in new_states:
-            result = minimax(new_state, depth - 1, player_type)[0]
+            result = minimax(new_state, depth - 1, alpha, beta, player_type)[0]
             if result < value:
                 value = result
                 action_value = new_state.choose_to_reach_state
+            if result < beta:
+                beta = result
+            if beta <= alpha:
+                break
         return (value, action_value)
 
 def get_response_index(question: Dict, player_type: PlayerType):
