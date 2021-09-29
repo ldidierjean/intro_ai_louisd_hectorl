@@ -15,7 +15,8 @@ class State:
     suspect: Set[int]
     active_cards: Set[int]
     ongoing_card: Character
-    last_action: int
+    choose_to_reach_state: int
+    question: int
 
     def __init__(
             self,
