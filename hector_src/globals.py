@@ -37,3 +37,5 @@ mandatory_powers = ["red", "blue", "grey"]
 class PlayerType(Enum):
     FANTOM = 0
     INSPECTOR = 1
+
+minimax_depth_level = 8
