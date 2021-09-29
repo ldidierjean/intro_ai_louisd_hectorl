@@ -1,9 +1,14 @@
 from typing import Dict, Tuple, List, Set
-from globals import PlayerType
+from globals import PlayerType, CharacterColor, color_mappings, question_mappings
 from Character import Character
 
 def generate_state_from_server_question(question: Dict):
-    return State()
+    data = question['data']
+    game_state = question['game state']
+    state = State(
+        
+    )
+    return state
 
 class State:
     fantom: int
