@@ -5,8 +5,6 @@ from Character import Character
 from Player import Player
 from globals import colors
 
-
-
 class Game:
     """
         Class representing a full game until either the inspector
