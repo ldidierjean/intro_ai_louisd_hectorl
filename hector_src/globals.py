@@ -1,3 +1,5 @@
+from enum import Enum
+
 """
     game data
 """
@@ -31,3 +33,7 @@ pink_passages = [{1, 4}, {0, 2, 5, 7}, {1, 3, 6}, {2, 7}, {0, 5, 8, 9},
 
 mandatory_powers = ["red", "blue", "grey"]
 
+
+class PlayerType(Enum):
+    FANTOM = 0
+    INSPECTOR = 1

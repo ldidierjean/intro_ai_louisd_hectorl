@@ -1,6 +1,5 @@
-from hector_src.enum import PlayerType
 from state_generator import generate_new_states_from_state
-from enum import PlayerType
+from globals import PlayerType
 import scoring
 
 def __is_end_state(state):
