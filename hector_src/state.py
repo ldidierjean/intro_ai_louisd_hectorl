@@ -6,14 +6,28 @@ def generate_state_from_server_question(question: Dict, player_type: PlayerType)
     data = question['data']
     game_state: Dict = question['game state']
     blocked = (game_state['blocked'][0], game_state['blocked'][1])
-    suspects = []
+    suspects: Set[int] = set()
+    active_cards: Set[int] = set()
+
+    for character in game_state['characters']:
+        if character['suspect'] == True:
+            suspects.add(color_mappings[character['color']])
+    
+    for card in game_state['active character_cards']:
+        active_cards.add(color_mappings[card['color']])
+    
     state = State(
         color_mappings[game_state['fantom']] if 'fantom' in game_state else -1,
         game_state['position_carlotta'],
         game_state['num_tour'],
         player_type,
         game_state['shadow'],
-        blocked
+        blocked,
+        suspects,
+        active_cards,
+        None,
+        -1,
+        question_mappings[question['question']]
     )
     return state
 

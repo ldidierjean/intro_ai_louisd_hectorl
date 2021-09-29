@@ -48,7 +48,7 @@ class Player():
 
     def answer(self, question):
         # work
-        state = generate_state_from_server_question(question)
+        state = generate_state_from_server_question(question, PlayerType.FANTOM)
         response_index = minimax(state, minimax_depth_level, True, PlayerType.FANTOM)
         # log
         data = question["data"]
