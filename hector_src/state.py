@@ -17,7 +17,8 @@ class State:
     suspect: Set[int]
     active_cards: Set[int]
     ongoing_card: Character
-    last_action: int
+    choose_to_reach_state: int
+    question: int
 
     def __init__(
             self,
@@ -31,7 +32,8 @@ class State:
             suspect: Set[int],
             active_cards: Set[int],
             oc: Character,
-            last_action: int
+            choose_to_reach_state: int,
+            question: int
     ):
         self.fantom = fantom
         self.pos_carlotta = pos_carlotta
@@ -43,7 +45,8 @@ class State:
         self.suspect = suspect
         self.active_cards = active_cards
         self.ongoing_card = Character(oc.color, oc.suspect, oc.position, oc.power_used)
-        self.last_action = last_action
+        self.choose_to_reach_state = choose_to_reach_state
+        self.question = question
 
     def generate_state(self):
         return self
