@@ -1,7 +1,9 @@
-from typing import Tuple, List, Set
+from typing import Dict, Tuple, List, Set
 from globals import PlayerType
 from Character import Character
 
+def generate_state_from_server_question(question: Dict):
+    return State()
 
 class State:
     fantom: int
