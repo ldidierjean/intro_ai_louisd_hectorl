@@ -3,7 +3,6 @@ from globals import PlayerType, CharacterColor, color_mappings, question_mapping
 from Character import Character
 
 def generate_state_from_server_question(question: Dict, player_type: PlayerType):
-    data = question['data']
     game_state: Dict = question['game state']
     blocked = (game_state['blocked'][0], game_state['blocked'][1])
     suspects: Set[int] = set()
@@ -25,7 +24,6 @@ def generate_state_from_server_question(question: Dict, player_type: PlayerType)
         blocked,
         suspects,
         active_cards,
-        None,
         -1,
         question_mappings[question['question']]
     )
