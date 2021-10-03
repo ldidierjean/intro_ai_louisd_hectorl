@@ -3,7 +3,6 @@ from hector_src.globals import PlayerType, CharacterColor, cm, qm, passages, pin
 from hector_src.Character import Character
 import copy
 
-
 def generate_state_from_server_question(question: Dict, player_type: PlayerType, current_ongoing_card: int):
     game_state: Dict = question['game state']
     blocked = (game_state['blocked'][0], game_state['blocked'][1])
@@ -164,8 +163,8 @@ class State:
         #print('activate_white_power:')
         ns = copy.deepcopy(self)
         ns.power_activated.add(cm['white'])
-        ns.question = qm['white character power']
-        return self
+        #ns.question = qm['white character power']
+        return [ns]
 
     def activate_purple_power(self):
         ns = copy.deepcopy(self)
@@ -264,15 +263,15 @@ class State:
             ns.question = question
             ns.choose_to_reach_state = c
             purple_pos = ns.positions[cm['purple']]
-            ns.positions[cm['purple']] = ns.positions[cm[c]]
-            ns.positions[cm[c]] = purple_pos
+            ns.positions[cm['purple']] = ns.positions[c]
+            ns.positions[c] = purple_pos
             next_states.append(ns)
         return next_states
 
     # TODO: handle brown power
     def brown_character_power(self):
         #print('brown_character_power:')
-        return self
+        return [copy.deepcopy(self)]
 
     def grey_character_power(self):
         #print(f'grey_character_power: {self}')
@@ -321,28 +320,28 @@ class State:
 
     def white_character_power_move_purple(self):
         #print('white_character_power_move_purple:')
-        return self
+        return [copy.deepcopy(self)]
 
     def white_character_power_move_brown(self):
         #print('white_character_power_move_brown:')
-        return self
+        return [copy.deepcopy(self)]
 
     def white_character_power_move_grey(self):
         #print('white_character_power_move_grey:')
-        return self
+        return [copy.deepcopy(self)]
 
     def white_character_power_move_blue(self):
         #print('white_character_power_move_blue:')
-        return self
+        return [copy.deepcopy(self)]
 
     def white_character_power_move_pink(self):
         #print('white_character_power_move_pink:')
-        return self
+        return [copy.deepcopy(self)]
 
     def white_character_power_move_black(self):
         #print('white_character_power_move_black:')
-        return self
+        return [copy.deepcopy(self)]
 
     def white_character_power_move_red(self):
         #print('white_character_power_move_red:')
-        return self
+        return [copy.deepcopy(self)]

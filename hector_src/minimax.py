@@ -62,17 +62,17 @@ def get_response_index(question: Dict, player_type: PlayerType, ongoing_card: in
     response_index = 0
     data = question['data']
     if isinstance(data[0], int):
-        for i in range(data):
+        for i in range(len(data)):
             if data[i] == chosen_value:
                 response_index = i
                 break
     elif isinstance(data[0], str):
-        for i in range(data):
+        for i in range(len(data)):
             if cm[data[i]] == chosen_value:
                 response_index = i
                 break
     else:
-        for i in range(data):
+        for i in range(len(data)):
             if cm[data[i]['color']] == chosen_value:
                 response_index = i
                 break

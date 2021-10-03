@@ -101,4 +101,4 @@ class CharacterColor(Enum):
     BROWN = 7
 
 
-minimax_depth_level = 8
+minimax_depth_level = 5
