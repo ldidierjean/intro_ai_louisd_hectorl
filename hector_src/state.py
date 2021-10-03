@@ -29,7 +29,7 @@ def generate_state_from_server_question(question: Dict, player_type: PlayerType,
         suspects,
         active_cards,
         -1,
-        qm[question['question']],
+        qm[question['question type']],
         current_ongoing_card,
         positions
     )
@@ -106,7 +106,7 @@ class State:
         switcher = {
             qm["select character"]: self.select_character,
             qm["activate purple power"]: self.activate_purple_power,
-            qm["activate grey power"]: self.activate_grey_power,
+            #qm["activate grey power"]: self.activate_grey_power,
             qm["activate white power"]: self.activate_white_power,
             qm["activate black power"]: self.activate_black_power,
             qm["activate brown power"]: self.activate_brown_power,
@@ -137,7 +137,7 @@ class State:
     #   Brown: select position
 
     def select_character(self):
-        print(f"Select Character: {self}")
+        #print(f"Select Character: {self}")
         if len(self.active_cards) == 4 and self.nbr_turn != 1:
             self.nbr_turn += 1
         next_states = []
@@ -161,7 +161,7 @@ class State:
 
     # TODO: handle white power
     def activate_white_power(self):
-        print('activate_white_power:')
+        #print('activate_white_power:')
         ns = copy.deepcopy(self)
         ns.power_activated.add(cm['white'])
         ns.question = qm['white character power']
@@ -180,7 +180,7 @@ class State:
         return [ns]
 
     def activate_black_power(self):
-        print(f'activate_black_power: {self}')
+        #print(f'activate_black_power: {self}')
         r = self.get_adjacent_pos(passages, self.positions[self.ongoing_card])
         for p in self.positions:
             if self.positions[p] in r:
@@ -204,7 +204,7 @@ class State:
     #   TODO: handle red power
     
     def select_position(self):
-        print(f'Select_position: {self}')
+        #print(f'Select_position: {self}')
         # Passages available
         pa = (pink_passages if self.ongoing_card == cm["pink"] else passages)
         pos = self.positions[self.ongoing_card]
@@ -253,7 +253,7 @@ class State:
         return next_states
 
     def purple_character_power(self):
-        print(f'purple_character_power: {self}')
+        #print(f'purple_character_power: {self}')
         question = (qm['select character'] if self.ongoing_card in self.has_moved else
                     qm['select position'])
         next_states = []
@@ -271,11 +271,11 @@ class State:
 
     # TODO: handle brown power
     def brown_character_power(self):
-        print('brown_character_power:')
+        #print('brown_character_power:')
         return self
 
     def grey_character_power(self):
-        print(f'grey_character_power: {self}')
+        #print(f'grey_character_power: {self}')
         question = (qm['select character'] if self.ongoing_card in self.has_moved else
                     qm['select position'])
         next_states = []
@@ -291,7 +291,7 @@ class State:
         return next_states
 
     def blue_character_power_room(self):
-        print(f'blue_character_power_room: {self}')
+        #print(f'blue_character_power_room: {self}')
         next_states = []
         for c in range(10):
             if c in self.blocked:
@@ -304,7 +304,7 @@ class State:
         return next_states
 
     def blue_character_power_exit(self):
-        print(f'blue_character_power_exit: {self}')
+        #print(f'blue_character_power_exit: {self}')
         next_states = []
         question = (qm['select character'] if self.ongoing_card in self.has_moved else
                     qm['select position'])
@@ -320,29 +320,29 @@ class State:
         return next_states
 
     def white_character_power_move_purple(self):
-        print('white_character_power_move_purple:')
+        #print('white_character_power_move_purple:')
         return self
 
     def white_character_power_move_brown(self):
-        print('white_character_power_move_brown:')
+        #print('white_character_power_move_brown:')
         return self
 
     def white_character_power_move_grey(self):
-        print('white_character_power_move_grey:')
+        #print('white_character_power_move_grey:')
         return self
 
     def white_character_power_move_blue(self):
-        print('white_character_power_move_blue:')
+        #print('white_character_power_move_blue:')
         return self
 
     def white_character_power_move_pink(self):
-        print('white_character_power_move_pink:')
+        #print('white_character_power_move_pink:')
         return self
 
     def white_character_power_move_black(self):
-        print('white_character_power_move_black:')
+        #print('white_character_power_move_black:')
         return self
 
     def white_character_power_move_red(self):
-        print('white_character_power_move_red:')
+        #print('white_character_power_move_red:')
         return self

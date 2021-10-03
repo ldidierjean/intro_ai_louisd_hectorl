@@ -57,7 +57,7 @@ def minimax(state: State, depth: int, alpha: float, beta: float, player_type: Pl
 
 def get_response_index(question: Dict, player_type: PlayerType, ongoing_card: int):
     state = generate_state_from_server_question(question, player_type, ongoing_card)
-    (_, chosen_value, card) = minimax(state, minimax_depth_level, True, player_type)
+    (_, chosen_value, card) = minimax(state, minimax_depth_level, float('-inf'), float('inf'), player_type)
 
     response_index = 0
     data = question['data']

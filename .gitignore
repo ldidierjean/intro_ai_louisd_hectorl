@@ -135,3 +135,5 @@ wandb/
 Note.txt
 
 saved_models/
+
+logs/
