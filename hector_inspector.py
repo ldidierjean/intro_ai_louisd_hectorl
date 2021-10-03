@@ -51,7 +51,7 @@ class Player():
 
     def answer(self, question):
         # work
-        (response_index, card) = get_response_index(question, PlayerType.INSPECTOR)
+        (response_index, card) = get_response_index(question, PlayerType.INSPECTOR, self.ongoing_card)
 
         self.ongoing_card = card
 

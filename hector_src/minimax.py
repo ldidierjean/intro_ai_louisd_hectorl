@@ -1,8 +1,7 @@
 from typing import Dict, List
-from state import State
 from hector_src.globals import PlayerType, minimax_depth_level, cm
-from hector_src.state import generate_state_from_server_question
-from scoring import score_state_for_fantom, score_state_for_inspector
+from hector_src.state import generate_state_from_server_question, State
+from hector_src.scoring import score_state_for_fantom, score_state_for_inspector
 
 """
 

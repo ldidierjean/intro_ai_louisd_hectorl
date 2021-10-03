@@ -1,4 +1,4 @@
-from state import State
+from hector_src.state import State
 
 def score_state_for_inspector(state: State):
     return (8 - len(state.suspect) * 10)

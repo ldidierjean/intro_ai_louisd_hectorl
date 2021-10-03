@@ -1,6 +1,6 @@
 from typing import Dict, Tuple, List, Set
-from globals import PlayerType, CharacterColor, cm, qm, passages, pink_passages
-from Character import Character
+from hector_src.globals import PlayerType, CharacterColor, cm, qm, passages, pink_passages
+from hector_src.Character import Character
 import copy
 
 
