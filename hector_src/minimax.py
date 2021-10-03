@@ -1,6 +1,6 @@
 from typing import Dict, List
 from state import State
-from hector_src.globals import PlayerType, minimax_depth_level, color_mappings
+from hector_src.globals import PlayerType, minimax_depth_level, cm
 from hector_src.state import generate_state_from_server_question
 from scoring import score_state_for_fantom, score_state_for_inspector
 
@@ -69,12 +69,12 @@ def get_response_index(question: Dict, player_type: PlayerType, ongoing_card: in
                 break
     elif isinstance(data[0], str):
         for i in range(data):
-            if color_mappings[data[i]] == chosen_value:
+            if cm[data[i]] == chosen_value:
                 response_index = i
                 break
     else:
         for i in range(data):
-            if color_mappings[data[i]['color']] == chosen_value:
+            if cm[data[i]['color']] == chosen_value:
                 response_index = i
                 break
 

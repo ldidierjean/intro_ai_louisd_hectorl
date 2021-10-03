@@ -33,7 +33,7 @@ pink_passages = [{1, 4}, {0, 2, 5, 7}, {1, 3, 6}, {2, 7}, {0, 5, 8, 9},
 
 mandatory_powers = ["red", "blue", "grey"]
 
-color_mappings = {
+cm = {
     "pink": 0,
     "blue": 1,
     "purple": 2,
@@ -44,14 +44,12 @@ color_mappings = {
     "brown": 7
 }
 
-question_mappings = {
+qm = {
     "select character": 0,
-    "activate white power": 1,
     "activate purple power": 2,
-    "activate brown power": 3,
-    "activate grey power": 4,
-    "activate blue power": 5,
-    "activate black power": 7,
+    "activate white power": 4,
+    "activate black power": 5,
+    "activate brown power": 7,
     "select position": 9,
     "purple character power": 10,
     "brown character power": 11,
@@ -66,6 +64,26 @@ question_mappings = {
     "white character power move black": 20,
     "white character power move red": 21
 }
+
+# from state import State;from globals import *;
+# s = State(1, 1, 1, 1, 1, [1, 1], {1, 2, 3}, {1, 2, 3}, 1, 1, 1, [])
+
+# fantom: int  # Color of the fantom
+# pos_carlotta: int  # Position of carlotta
+# exit: int = 22  # Position to reach the exit
+# nbr_turn: int  # The number of the current turn
+# next_player: PlayerType  # Who play next
+# shadow: int  # Which room is in the dark
+# blocked: Tuple[int, int]  # Which room are blocked
+# suspect: Set[int]  # Who are the current suspects
+# active_cards: Set[int]  # What card are waiting to be played
+# choose_to_reach_state: int  # The option we need to do to reach the described state
+# question: int  # The question asked and the next to ask
+# ongoing_card: int  # Which card is currently being played
+# positions: Dict[int, int]  # The position of the card [color, position]
+# power_activated: Dict[int, bool]  # If the power where used this turn [color, bool]
+# has_moved: Set[int]  # char who has moved this turn
+
 
 class PlayerType(Enum):
     FANTOM = 0
