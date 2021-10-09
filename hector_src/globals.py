@@ -65,6 +65,8 @@ qm = {
     "white character power move red": 21
 }
 
+shuffle = [[0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 4, 3, 5, 6, 7], [0, 1, 2, 5, 3, 4, 6, 7], [0, 1, 2, 6, 3, 4, 5, 7], [0, 1, 2, 7, 3, 4, 5, 6], [0, 1, 3, 4, 2, 5, 6, 7], [0, 1, 3, 5, 2, 4, 6, 7], [0, 1, 3, 6, 2, 4, 5, 7], [0, 1, 3, 7, 2, 4, 5, 6], [0, 1, 4, 5, 2, 3, 6, 7], [0, 1, 4, 6, 2, 3, 5, 7], [0, 1, 4, 7, 2, 3, 5, 6], [0, 1, 5, 6, 2, 3, 4, 7], [0, 1, 5, 7, 2, 3, 4, 6], [0, 1, 6, 7, 2, 3, 4, 5], [0, 2, 3, 4, 1, 5, 6, 7], [0, 2, 3, 5, 1, 4, 6, 7], [0, 2, 3, 6, 1, 4, 5, 7], [0, 2, 3, 7, 1, 4, 5, 6], [0, 2, 4, 5, 1, 3, 6, 7], [0, 2, 4, 6, 1, 3, 5, 7], [0, 2, 4, 7, 1, 3, 5, 6], [0, 2, 5, 6, 1, 3, 4, 7], [0, 2, 5, 7, 1, 3, 4, 6], [0, 2, 6, 7, 1, 3, 4, 5], [0, 3, 4, 5, 1, 2, 6, 7], [0, 3, 4, 6, 1, 2, 5, 7], [0, 3, 4, 7, 1, 2, 5, 6], [0, 3, 5, 6, 1, 2, 4, 7], [0, 3, 5, 7, 1, 2, 4, 6], [0, 3, 6, 7, 1, 2, 4, 5], [0, 4, 5, 6, 1, 2, 3, 7], [0, 4, 5, 7, 1, 2, 3, 6], [0, 4, 6, 7, 1, 2, 3, 5], [0, 5, 6, 7, 1, 2, 3, 4], [1, 2, 3, 4, 0, 5, 6, 7], [1, 2, 3, 5, 0, 4, 6, 7], [1, 2, 3, 6, 0, 4, 5, 7], [1, 2, 3, 7, 0, 4, 5, 6], [1, 2, 4, 5, 0, 3, 6, 7], [1, 2, 4, 6, 0, 3, 5, 7], [1, 2, 4, 7, 0, 3, 5, 6], [1, 2, 5, 6, 0, 3, 4, 7], [1, 2, 5, 7, 0, 3, 4, 6], [1, 2, 6, 7, 0, 3, 4, 5], [1, 3, 4, 5, 0, 2, 6, 7], [1, 3, 4, 6, 0, 2, 5, 7], [1, 3, 4, 7, 0, 2, 5, 6], [1, 3, 5, 6, 0, 2, 4, 7], [1, 3, 5, 7, 0, 2, 4, 6], [1, 3, 6, 7, 0, 2, 4, 5], [1, 4, 5, 6, 0, 2, 3, 7], [1, 4, 5, 7, 0, 2, 3, 6], [1, 4, 6, 7, 0, 2, 3, 5], [1, 5, 6, 7, 0, 2, 3, 4], [2, 3, 4, 5, 0, 1, 6, 7], [2, 3, 4, 6, 0, 1, 5, 7], [2, 3, 4, 7, 0, 1, 5, 6], [2, 3, 5, 6, 0, 1, 4, 7], [2, 3, 5, 7, 0, 1, 4, 6], [2, 3, 6, 7, 0, 1, 4, 5], [2, 4, 5, 6, 0, 1, 3, 7], [2, 4, 5, 7, 0, 1, 3, 6], [2, 4, 6, 7, 0, 1, 3, 5], [2, 5, 6, 7, 0, 1, 3, 4], [3, 4, 5, 6, 0, 1, 2, 7], [3, 4, 5, 7, 0, 1, 2, 6], [3, 4, 6, 7, 0, 1, 2, 5], [3, 5, 6, 7, 0, 1, 2, 4], [4, 5, 6, 7, 0, 1, 2, 3]]
+
 # from state import State;from globals import *;
 # s = State(1, 1, 1, 1, 1, [1, 1], {1, 2, 3}, {1, 2, 3}, 1, 1, 1, [])
 
@@ -102,3 +104,23 @@ class CharacterColor(Enum):
 
 
 minimax_depth_level = 5
+
+x = {
+    'position_carlotta': 6,
+    'exit': 22, 'num_tour': 1, 'shadow': 3, 'blocked': (0, 1),
+    'characters': [{'color': 'white', 'suspect': True, 'position': 2, 'power': False},
+                   {'color': 'pink', 'suspect': True, 'position': 2, 'power': False},
+                   {'color': 'brown', 'suspect': True, 'position': 7, 'power': False},
+                   {'color': 'purple', 'suspect': True, 'position': 7, 'power': False},
+                   {'color': 'black', 'suspect': True, 'position': 4, 'power': False},
+                   {'color': 'blue', 'suspect': True, 'position': 0, 'power': False},
+                   {'color': 'red', 'suspect': True, 'position': 9, 'power': False},
+                   {'color': 'grey', 'suspect': True, 'position': 3, 'power': False}],
+    'character_cards': [{'color': 'black', 'suspect': True, 'position': 4, 'power': False},
+                        {'color': 'purple', 'suspect': True, 'position': 7, 'power': False},
+                        {'color': 'blue', 'suspect': True, 'position': 0, 'power': False},
+                        {'color': 'white', 'suspect': True, 'position': 2, 'power': False},
+                        {'color': 'grey', 'suspect': True, 'position': 3, 'power': False},
+                        {'color': 'pink', 'suspect': True, 'position': 2, 'power': False},
+                        {'color': 'brown', 'suspect': True, 'position': 7, 'power': False},
+                        {'color': 'red', 'suspect': True, 'position': 9, 'power': False}], 'active character_cards': []}

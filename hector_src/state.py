@@ -1,12 +1,14 @@
 from typing import Dict, Tuple, List, Set
-from hector_src.globals import PlayerType, CharacterColor, cm, qm, passages, pink_passages
+from hector_src.globals import PlayerType, CharacterColor, cm, qm, passages, pink_passages, shuffle
 from hector_src.Character import Character
 import copy
+import itertools
 
 def generate_state_from_server_question(question: Dict, player_type: PlayerType, current_ongoing_card: int):
     game_state: Dict = question['game state']
     blocked = (game_state['blocked'][0], game_state['blocked'][1])
     suspects: Set[int] = set()
+    character_cards: Set[int] = set()
     active_cards: Set[int] = set()
     positions: Dict[int, int] = dict()
 
@@ -14,6 +16,9 @@ def generate_state_from_server_question(question: Dict, player_type: PlayerType,
         if character['suspect']:
             suspects.add(cm[character['color']])
         positions[cm[character['color']]] = character['position']
+
+    for card in game_state['character_cards']:
+        character_cards.add(cm[card['color']])
 
     for card in game_state['active character_cards']:
         active_cards.add(cm[card['color']])
@@ -26,6 +31,7 @@ def generate_state_from_server_question(question: Dict, player_type: PlayerType,
         game_state['shadow'],
         blocked,
         suspects,
+        character_cards,
         active_cards,
         -1,
         qm[question['question type']],
@@ -33,6 +39,7 @@ def generate_state_from_server_question(question: Dict, player_type: PlayerType,
         positions
     )
     return state
+
 
 # TODO: when select character is called and active card is empty:
 
@@ -45,6 +52,7 @@ class State:
     shadow: int  # Which room is in the dark
     blocked: Tuple[int, int]  # Which room are blocked
     suspect: Set[int]  # Who are the current suspects
+    character_cards: Set[int]  # All card shuffled
     active_cards: Set[int]  # What card are waiting to be played
     choose_to_reach_state: int  # The option we need to do to reach the described state
     question: int  # The question asked and the next to ask
@@ -62,6 +70,7 @@ class State:
             shadow: int,
             blocked: Tuple[int, int],
             suspect: Set[int],
+            character_cards: Set[int],
             active_cards: Set[int],
             choose_to_reach_state: int,
             question: int,
@@ -77,6 +86,7 @@ class State:
         self.shadow = shadow
         self.blocked = blocked
         self.suspect = suspect
+        self.character_cards = character_cards
         self.active_cards = active_cards
         self.choose_to_reach_state = choose_to_reach_state
         self.question = question
@@ -94,6 +104,7 @@ class State:
                "\n  shadow: " + str(self.shadow) + \
                "\n  blocked: " + str(self.blocked) + \
                "\n  suspect: " + str(self.suspect) + \
+               "\n  character_cards: " + str(self.character_cards) + \
                "\n  active_cards: " + str(self.active_cards) + \
                "\n  choose_to_reach_state: " + str(self.choose_to_reach_state) + \
                "\n  question: " + str(self.question) + \
@@ -101,11 +112,52 @@ class State:
                "\n  Position: " + str(self.positions) + \
                "\n  power_activated: " + str(self.power_activated)
 
+
+    def handle_fantom_scream(self, state):
+        partition: List[Set[Character]] = [
+            {p for p in state.positions if state.positions[p] == i} for i in range(10)]
+        if len(partition[state.positions[state.fantom]]) == 1 \
+                or state.positions[state.fantom] == state.shadow:
+            state.pos_carlotta += 1
+            for room, chars in enumerate(partition):
+                if len(chars) > 1 and room != state.shadow:
+                    for p in chars:
+                        state.suspect.remove(p)
+        else:
+            for room, chars in enumerate(partition):
+                if len(chars) == 1 or room == state.shadow:
+                    for p in chars:
+                        state.suspect.remove(p)
+        state.pos_carlotta += len(state.suspect)
+        return state
+
+    def handle_play_end(self, base_state):
+        copied_state = copy.deepcopy(base_state)
+        if len(base_state.active_cards) == 0:
+            copied_state.nbr_turn += 1
+        p = (copied_state.nbr_turn + 1) % 2
+        idx = [p, 1-p, 1-p, p][3 - len(copied_state.active_cards)]
+        copied_state.next_player = [PlayerType.FANTOM, PlayerType.INSPECTOR][idx]
+        if len(base_state.active_cards) == 0:
+            copied_state = self.handle_fantom_scream(copied_state)
+            if p == 0:
+                s = []
+                for x in shuffle:
+                    ns = copy.deepcopy(copied_state)
+                    ns.character_cards = x
+                    ns.active_cards = x[:4]
+                    s.append(ns)
+                return [s]
+            else:
+                copied_state.active_cards = copied_state.character_cards[4:]
+                return [copied_state]
+        else:
+            return [copied_state]
+
     def generate_state(self):
         switcher = {
             qm["select character"]: self.select_character,
             qm["activate purple power"]: self.activate_purple_power,
-            #qm["activate grey power"]: self.activate_grey_power,
             qm["activate white power"]: self.activate_white_power,
             qm["activate black power"]: self.activate_black_power,
             qm["activate brown power"]: self.activate_brown_power,
@@ -123,7 +175,13 @@ class State:
             qm["white character power move black"]: self.white_character_power_move_black,
             qm["white character power move red"]: self.white_character_power_move_red
         }
-        return switcher.get(self.question)()
+        new_states = []
+        for ns in switcher.get(self.question)():
+            if ns.question == qm["select character"]:
+                new_states += self.handle_play_end(ns)
+            else:
+                new_states += ns
+        return new_states
 
     # Next action
     #   Pink: select position
@@ -136,9 +194,7 @@ class State:
     #   Brown: select position
 
     def select_character(self):
-        #print(f"Select Character: {self}")
-        if len(self.active_cards) == 4 and self.nbr_turn != 1:
-            self.nbr_turn += 1
+        # print(f"Select Character: {self}")
         next_states = []
         for c in self.active_cards:
             ns = copy.deepcopy(self)
@@ -160,7 +216,7 @@ class State:
 
     # TODO: handle white power
     def activate_white_power(self):
-        #print('activate_white_power:')
+        # print('activate_white_power:')
         ns = copy.deepcopy(self)
         ns.power_activated.add(cm['white'])
         #ns.question = qm['white character power']
@@ -179,7 +235,7 @@ class State:
         return [ns]
 
     def activate_black_power(self):
-        #print(f'activate_black_power: {self}')
+        # print(f'activate_black_power: {self}')
         r = self.get_adjacent_pos(passages, self.positions[self.ongoing_card])
         for p in self.positions:
             if self.positions[p] in r:
@@ -201,9 +257,9 @@ class State:
     #   Red: activate red power
     #   Brown: select_character or activate brown power
     #   TODO: handle red power
-    
+
     def select_position(self):
-        #print(f'Select_position: {self}')
+        # print(f'Select_position: {self}')
         # Passages available
         pa = (pink_passages if self.ongoing_card == cm["pink"] else passages)
         pos = self.positions[self.ongoing_card]
@@ -252,7 +308,7 @@ class State:
         return next_states
 
     def purple_character_power(self):
-        #print(f'purple_character_power: {self}')
+        # print(f'purple_character_power: {self}')
         question = (qm['select character'] if self.ongoing_card in self.has_moved else
                     qm['select position'])
         next_states = []
@@ -274,7 +330,7 @@ class State:
         return [copy.deepcopy(self)]
 
     def grey_character_power(self):
-        #print(f'grey_character_power: {self}')
+        # print(f'grey_character_power: {self}')
         question = (qm['select character'] if self.ongoing_card in self.has_moved else
                     qm['select position'])
         next_states = []
@@ -290,7 +346,7 @@ class State:
         return next_states
 
     def blue_character_power_room(self):
-        #print(f'blue_character_power_room: {self}')
+        # print(f'blue_character_power_room: {self}')
         next_states = []
         for c in range(10):
             if c in self.blocked:
@@ -303,7 +359,7 @@ class State:
         return next_states
 
     def blue_character_power_exit(self):
-        #print(f'blue_character_power_exit: {self}')
+        # print(f'blue_character_power_exit: {self}')
         next_states = []
         question = (qm['select character'] if self.ongoing_card in self.has_moved else
                     qm['select position'])
