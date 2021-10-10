@@ -106,21 +106,27 @@ class CharacterColor(Enum):
 minimax_depth_level = 5
 
 x = {
-    'position_carlotta': 6,
-    'exit': 22, 'num_tour': 1, 'shadow': 3, 'blocked': (0, 1),
-    'characters': [{'color': 'white', 'suspect': True, 'position': 2, 'power': False},
-                   {'color': 'pink', 'suspect': True, 'position': 2, 'power': False},
-                   {'color': 'brown', 'suspect': True, 'position': 7, 'power': False},
-                   {'color': 'purple', 'suspect': True, 'position': 7, 'power': False},
-                   {'color': 'black', 'suspect': True, 'position': 4, 'power': False},
-                   {'color': 'blue', 'suspect': True, 'position': 0, 'power': False},
-                   {'color': 'red', 'suspect': True, 'position': 9, 'power': False},
-                   {'color': 'grey', 'suspect': True, 'position': 3, 'power': False}],
-    'character_cards': [{'color': 'black', 'suspect': True, 'position': 4, 'power': False},
-                        {'color': 'purple', 'suspect': True, 'position': 7, 'power': False},
-                        {'color': 'blue', 'suspect': True, 'position': 0, 'power': False},
-                        {'color': 'white', 'suspect': True, 'position': 2, 'power': False},
-                        {'color': 'grey', 'suspect': True, 'position': 3, 'power': False},
-                        {'color': 'pink', 'suspect': True, 'position': 2, 'power': False},
-                        {'color': 'brown', 'suspect': True, 'position': 7, 'power': False},
-                        {'color': 'red', 'suspect': True, 'position': 9, 'power': False}], 'active character_cards': []}
+    'game state': {
+        'position_carlotta': 6,
+        'exit': 22, 'num_tour': 1, 'shadow': 3, 'blocked': (0, 1),
+        'characters': [{'color': 'white', 'suspect': True, 'position': 2, 'power': False},
+                       {'color': 'pink', 'suspect': True, 'position': 2, 'power': False},
+                       {'color': 'brown', 'suspect': True, 'position': 7, 'power': False},
+                       {'color': 'purple', 'suspect': True, 'position': 7, 'power': False},
+                       {'color': 'black', 'suspect': True, 'position': 4, 'power': False},
+                       {'color': 'blue', 'suspect': True, 'position': 0, 'power': False},
+                       {'color': 'red', 'suspect': True, 'position': 9, 'power': False},
+                       {'color': 'grey', 'suspect': True, 'position': 3, 'power': False}],
+        'character_cards': [{'color': 'black', 'suspect': True, 'position': 4, 'power': False},
+                            {'color': 'purple', 'suspect': True, 'position': 7, 'power': False},
+                            {'color': 'blue', 'suspect': True, 'position': 0, 'power': False},
+                            {'color': 'white', 'suspect': True, 'position': 2, 'power': False},
+                            {'color': 'grey', 'suspect': True, 'position': 3, 'power': False},
+                            {'color': 'pink', 'suspect': True, 'position': 2, 'power': False},
+                            {'color': 'brown', 'suspect': True, 'position': 7, 'power': False},
+                            {'color': 'red', 'suspect': True, 'position': 9, 'power': False}],
+        'active character_cards': []
+    },
+    'question type': "select character"
+
+}

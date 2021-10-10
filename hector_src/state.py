@@ -2,7 +2,7 @@ from typing import Dict, Tuple, List, Set
 from hector_src.globals import PlayerType, CharacterColor, cm, qm, passages, pink_passages, shuffle
 from hector_src.Character import Character
 import copy
-import itertools
+from random import choice
 
 def generate_state_from_server_question(question: Dict, player_type: PlayerType, current_ongoing_card: int):
     game_state: Dict = question['game state']
@@ -112,7 +112,6 @@ class State:
                "\n  Position: " + str(self.positions) + \
                "\n  power_activated: " + str(self.power_activated)
 
-
     def handle_fantom_scream(self, state):
         partition: List[Set[Character]] = [
             {p for p in state.positions if state.positions[p] == i} for i in range(10)]
@@ -214,35 +213,63 @@ class State:
                 next_states.append(ns2)
         return next_states
 
-    # TODO: handle white power
+    def in_same_room(self, character):
+        t = []
+        for p in self.positions:
+            if self.positions[p] == cm[character] and p != cm[character]:
+                t.append(p)
+        return t
+
+    def find_next_white_power(self):
+        c = self.in_same_room("white")
+        tab = ["pink", "blue", "purple", "grey", "white", "black", "red", "brown" ]
+        if len(c) == 0:
+            return 'select character'
+        return f'white character power move {tab[c[0]]}'
+
     def activate_white_power(self):
-        # print('activate_white_power:')
-        ns = copy.deepcopy(self)
-        ns.power_activated.add(cm['white'])
-        #ns.question = qm['white character power']
-        return [ns]
+        yes = copy.deepcopy(self)
+        yes.power_activated.add(cm['white'])
+        yes.question = self.find_next_white_power()
+        yes.choose_to_reach_state = 1
+        no = copy.deepcopy(self)
+        no.question = 'select character'
+        no.choose_to_reach_state = 0
+        return [yes, no]
 
     def activate_purple_power(self):
-        ns = copy.deepcopy(self)
-        ns.power_activated.add(cm['purple'])
-        ns.question = qm['purple character power']
-        return [ns]
+        yes = copy.deepcopy(self)
+        yes.power_activated.add(cm['purple'])
+        yes.question = qm['purple character power']
+        yes.choose_to_reach_state = 1
+        no = copy.deepcopy(self)
+        no.question = 'select character'
+        no.choose_to_reach_state = 0
+        return [yes, no]
 
     def activate_brown_power(self):
-        ns = copy.deepcopy(self)
-        ns.power_activated.add(cm['brown'])
-        ns.question = qm['brown character power']
-        return [ns]
+        yes = copy.deepcopy(self)
+        yes.power_activated.add(cm['brown'])
+        yes.question = qm['brown character power']
+        yes.choose_to_reach_state = 1
+        no = copy.deepcopy(self)
+        no.question = 'select character'
+        no.choose_to_reach_state = 0
+        return [yes, no]
 
     def activate_black_power(self):
         # print(f'activate_black_power: {self}')
         r = self.get_adjacent_pos(passages, self.positions[self.ongoing_card])
+        yes = copy.deepcopy(self)
+        yes.question = qm['select character']
+        yes.choose_to_reach_state = 1
         for p in self.positions:
             if self.positions[p] in r:
-                self.positions[p] = self.positions[self.ongoing_card]
-        ns = copy.deepcopy(self)
-        ns.question = qm['select character']
-        return [ns]
+                yes.positions[p] = self.positions[self.ongoing_card]
+        no = copy.deepcopy(self)
+        no.question = 'select character'
+        no.choose_to_reach_state = 0
+        return [yes, no]
 
     def get_adjacent_pos(self, pa, pos):
         return [room for room in pa[pos] if {room, pos} != set(self.blocked)]
@@ -256,7 +283,6 @@ class State:
     #   Black: select_character or activate black power
     #   Red: activate red power
     #   Brown: select_character or activate brown power
-    #   TODO: handle red power
 
     def select_position(self):
         # print(f'Select_position: {self}')
@@ -285,7 +311,7 @@ class State:
             ns = copy.deepcopy(self)
             ns.positions[self.ongoing_card] = c
             ns.has_moved.add(self.ongoing_card)
-            if self.ongoing_card in [cm['pink'], cm['purple'], cm['white'], cm['black'], cm['brown']]:
+            if self.ongoing_card in [cm['pink'], cm['purple'], cm['white'], cm['black'], cm['brown'], cm["red"]]:
                 ns.question = qm['select character']
             if self.ongoing_card == cm['blue']:
                 ns.question = (qm['select character'] if self.ongoing_card in self.power_activated else
@@ -305,7 +331,22 @@ class State:
                 ns2.question = q[self.ongoing_card]
                 ns2.choose_to_reach_state = c
                 next_states.append(ns2)
+            if self.ongoing_card == cm['red']:
+                next_states += ns.handle_red_power()
         return next_states
+
+    def handle_red_power(self):
+        ac = list(range(8)) + [-1, -1, -1]
+        new_states = []
+        for x in ac:
+            ns = copy.deepcopy(self)
+            draw = choice(ac)
+            if draw == -1:
+                self.pos_carlotta += -1 if self.next_player == PlayerType.INSPECTOR else 1
+            elif self.next_player == PlayerType:
+                self.suspect.remove(draw)
+            new_states.append(ns)
+        return new_states
 
     def purple_character_power(self):
         # print(f'purple_character_power: {self}')
@@ -324,10 +365,16 @@ class State:
             next_states.append(ns)
         return next_states
 
-    # TODO: handle brown power
     def brown_character_power(self):
-        #print('brown_character_power:')
-        return [copy.deepcopy(self)]
+        c = self.in_same_room("brown")
+        next_states = []
+        for x in c:
+            ns = copy.deepcopy(self)
+            ns.power_activated.add(cm['brown'])
+            ns.question = qm['select character']
+            ns.choose_to_reach_state = c
+            next_states.append(ns)
+        return next_states
 
     def grey_character_power(self):
         # print(f'grey_character_power: {self}')
@@ -374,30 +421,35 @@ class State:
             next_states.append(ns)
         return next_states
 
+    def white_character_power_move(self, color):
+        ap = self.get_adjacent_pos(passages, self.positions[self.ongoing_card])
+        next_states = []
+        q = self.find_next_white_power()
+        for p in ap:
+            ns = copy.deepcopy(self)
+            ns.question = q
+            ns.choose_to_reach_state = p
+            ns.positions[cm[color]] = p
+            next_states.append(ns)
+        return next_states
+
     def white_character_power_move_purple(self):
-        #print('white_character_power_move_purple:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("purlple")
 
     def white_character_power_move_brown(self):
-        #print('white_character_power_move_brown:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("brown")
 
     def white_character_power_move_grey(self):
-        #print('white_character_power_move_grey:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("grey")
 
     def white_character_power_move_blue(self):
-        #print('white_character_power_move_blue:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("blue")
 
     def white_character_power_move_pink(self):
-        #print('white_character_power_move_pink:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("pink")
 
     def white_character_power_move_black(self):
-        #print('white_character_power_move_black:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("black")
 
     def white_character_power_move_red(self):
-        #print('white_character_power_move_red:')
-        return [copy.deepcopy(self)]
+        return self.white_character_power_move("red")
